@@ -2,13 +2,22 @@ module Api
   module V1
     class ApplicationsController < BaseController
       before_action :authenticate_company
-      before_action :set_application, only: [:update]
+      before_action :set_application, only: [:show, :update]
 
       def index
         @applications = current_company.applications.includes(:job).all
         render json: @applications.as_json(include: { 
           job: { only: [:id, :title] }
         }, methods: [:resume_url])
+      end
+
+      def show
+        render json: @application.as_json(
+          include: { 
+            job: { only: [:id, :title] }
+          },
+          methods: [:resume_url]
+        )
       end
 
       def create
@@ -28,7 +37,12 @@ module Api
 
       def update
         if @application.update(application_params)
-          render json: @application.as_json(methods: [:resume_url])
+          render json: @application.as_json(
+            include: { 
+              job: { only: [:id, :title] }
+            },
+            methods: [:resume_url]
+          )
         else
           render json: { errors: @application.errors.full_messages }, status: :unprocessable_entity
         end
