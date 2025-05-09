@@ -1,13 +1,23 @@
 FROM ruby:3.4.2-alpine3.20
 
 # ビルドに必要なパッケージを一度にまとめてインストール
-RUN apk add --no-cache build-base mariadb-dev nodejs npm yaml-dev pkgconf
+RUN apk add --no-cache \
+    build-base \
+    mariadb-dev \
+    nodejs \
+    npm \
+    yaml-dev \
+    pkgconf \
+    tzdata \
+    git \
+    bash
 
 WORKDIR /app
 
 # Gemfile を先にコピーして bundle install キャッシュを効かせる
-COPY backend/Gemfile backend/Gemfile.lock ./
-RUN bundle install
+COPY Gemfile Gemfile.lock ./
+RUN bundle config set --local build.date --with-cflags="-Wno-error=implicit-function-declaration" && \
+    bundle install
 
 # 残りのアプリケーションコードをコピー
 COPY . .
