@@ -29,6 +29,7 @@ module Api
         end
 
         if @application.save
+          ApplicationMailer.new_application_notification(@application).deliver_later
           render json: @application.as_json(methods: [:resume_url]), status: :created
         else
           render json: { errors: @application.errors.full_messages }, status: :unprocessable_entity
@@ -37,6 +38,7 @@ module Api
 
       def update
         if @application.update(application_params)
+          ApplicationMailer.application_status_update(@application).deliver_later
           render json: @application.as_json(
             include: { 
               job: { only: [:id, :title] }

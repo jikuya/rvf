@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>新しい応募がありました</h1>
+    <p>
+      求人「<%= @job.title %>」に新しい応募がありました。
+    </p>
+
+    <h2>応募者情報</h2>
+    <ul>
+      <li>名前: <%= @application.name %></li>
+      <li>メールアドレス: <%= @application.email %></li>
+      <% if @application.phone.present? %>
+        <li>電話番号: <%= @application.phone %></li>
+      <% end %>
+    </ul>
+
+    <% if @application.cover_letter.present? %>
+      <h2>カバーレター</h2>
+      <p><%= @application.cover_letter %></p>
+    <% end %>
+
+    <p>
+      応募一覧ページから詳細を確認できます。
+    </p>
+  </body>
+</html> 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>応募ステータスが更新されました</h1>
+    <p>
+      求人「<%= @job.title %>」への応募ステータスが更新されました。
+    </p>
+
+    <h2>現在のステータス</h2>
+    <p>
+      <% case @application.status %>
+      <% when 'pending' %>
+        応募中
+      <% when 'screening' %>
+        書類選考中
+      <% when 'interview' %>
+        面接中
+      <% when 'offer' %>
+        内定
+      <% when 'rejected' %>
+        不採用
+      <% end %>
+    </p>
+
+    <p>
+      応募詳細ページから詳細を確認できます。
+    </p>
+  </body>
+</html> 
