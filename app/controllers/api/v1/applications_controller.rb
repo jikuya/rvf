@@ -3,14 +3,22 @@ module Api
     class ApplicationsController < BaseController
       def index
         @applications = Application.includes(:job, :company).all
-        render json: @applications
+        render json: @applications.as_json(include: { 
+          job: { only: [:id, :title] },
+          company: { only: [:id, :name] }
+        }, methods: [:resume_url])
       end
 
       def create
-        @application = Application.new(application_params)
+        @job = Job.find(params[:job_id])
+        @application = @job.applications.build(application_params)
+        
+        if params[:resume].present?
+          @application.resume.attach(params[:resume])
+        end
 
         if @application.save
-          render json: @application, status: :created
+          render json: @application.as_json(methods: [:resume_url]), status: :created
         else
           render json: { errors: @application.errors.full_messages }, status: :unprocessable_entity
         end
@@ -20,7 +28,7 @@ module Api
         @application = Application.find(params[:id])
 
         if @application.update(application_params)
-          render json: @application
+          render json: @application.as_json(methods: [:resume_url])
         else
           render json: { errors: @application.errors.full_messages }, status: :unprocessable_entity
         end
@@ -29,7 +37,7 @@ module Api
       private
 
       def application_params
-        params.require(:application).permit(:job_id, :company_id, :name, :email, :phone, :resume_url, :cover_letter, :status)
+        params.permit(:name, :email, :phone, :cover_letter, :status)
       end
     end
   end
