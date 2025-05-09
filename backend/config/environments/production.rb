@@ -20,9 +20,6 @@ Rails.application.configure do
   # key such as config/credentials/production.key. This key is used to decrypt credentials (and other encrypted files).
   # config.require_master_key = true
 
-  # Enable static file serving from the `/public` folder (turn off if using NGINX/Apache for it).
-  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
-
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :s3
 
@@ -98,4 +95,4 @@ Rails.application.configure do
   }
 
   config.hosts << "rvf-f1cc04378d39.herokuapp.com"
-end 
+end
