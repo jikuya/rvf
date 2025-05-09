@@ -23,19 +23,6 @@ Rails.application.configure do
   # Enable static file serving from the `/public` folder (turn off if using NGINX/Apache for it).
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
-  # Compress CSS using a preprocessor.
-  # config.assets.css_compressor = :sass
-
-  # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
-
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
-
-  # Specifies the header that your server uses for sending files.
-  # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
-  # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
-
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :s3
 
@@ -95,17 +82,17 @@ Rails.application.configure do
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
-  # Configure email delivery using SendGrid
-  config.action_mailer.default_url_options = { host: 'rvf.com' }
+  # Configure email delivery using Mailgun
+  config.action_mailer.default_url_options = { host: 'rvf-f1cc04378d39.herokuapp.com' }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.default_from = 'noreply@rvf.com'
+  config.action_mailer.default_from = 'noreply@rvf-f1cc04378d39.herokuapp.com'
   config.action_mailer.smtp_settings = {
-    address: 'smtp.sendgrid.net',
-    port: 587,
-    domain: 'rvf.com',
-    user_name: ENV['SENDGRID_USERNAME'],
-    password: ENV['SENDGRID_PASSWORD'],
+    address: ENV['MAILGUN_SMTP_SERVER'],
+    port: ENV['MAILGUN_SMTP_PORT'],
+    domain: ENV['MAILGUN_DOMAIN'],
+    user_name: ENV['MAILGUN_SMTP_LOGIN'],
+    password: ENV['MAILGUN_SMTP_PASSWORD'],
     authentication: :plain,
     enable_starttls_auto: true
   }
