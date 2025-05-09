@@ -6,6 +6,7 @@ class CreateApplications < ActiveRecord::Migration[8.0]
       t.string :resume_url
       t.string :status, null: false, default: 'pending'
       t.references :job, null: false, foreign_key: true
+      t.references :company, null: false, foreign_key: true
 
       t.timestamps
     end

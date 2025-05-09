@@ -45,8 +45,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_132240) do
     t.string "resume_url"
     t.string "status", default: "pending", null: false
     t.bigint "job_id", null: false
+    t.bigint "company_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_applications_on_company_id"
     t.index ["email"], name: "index_applications_on_email"
     t.index ["job_id"], name: "index_applications_on_job_id"
     t.index ["status"], name: "index_applications_on_status"
@@ -73,6 +75,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_132240) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "applications", "companies"
   add_foreign_key "applications", "jobs"
   add_foreign_key "jobs", "companies"
 end
