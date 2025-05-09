@@ -1,11 +1,13 @@
 module Api
   module V1
     class ApplicationsController < BaseController
+      before_action :authenticate_company
+      before_action :set_application, only: [:update]
+
       def index
-        @applications = Application.includes(:job, :company).all
+        @applications = current_company.applications.includes(:job).all
         render json: @applications.as_json(include: { 
-          job: { only: [:id, :title] },
-          company: { only: [:id, :name] }
+          job: { only: [:id, :title] }
         }, methods: [:resume_url])
       end
 
@@ -25,8 +27,6 @@ module Api
       end
 
       def update
-        @application = Application.find(params[:id])
-
         if @application.update(application_params)
           render json: @application.as_json(methods: [:resume_url])
         else
@@ -36,8 +36,27 @@ module Api
 
       private
 
+      def set_application
+        @application = current_company.applications.find(params[:id])
+      end
+
       def application_params
         params.permit(:name, :email, :phone, :cover_letter, :status)
+      end
+
+      def authenticate_company
+        header = request.headers['Authorization']
+        token = header.split(' ').last if header
+        begin
+          @decoded = JsonWebToken.decode(token)
+          @current_company = Company.find(@decoded[:company_id])
+        rescue ActiveRecord::RecordNotFound, JWT::DecodeError
+          render json: { error: '認証が必要です' }, status: :unauthorized
+        end
+      end
+
+      def current_company
+        @current_company
       end
     end
   end
