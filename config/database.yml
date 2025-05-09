@@ -51,7 +51,4 @@ test:
 #
 production:
   <<: *default
-  database: rvf_production
-  username: <%= ENV['RVF_DATABASE_USERNAME'] %>
-  password: <%= ENV['RVF_DATABASE_PASSWORD'] %>
-  host: <%= ENV['RVF_DATABASE_HOST'] %>
+  url: <%= ENV['DATABASE_URL'] %>
