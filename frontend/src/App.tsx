@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import JobDetail from './pages/JobDetail';
+import Applications from './pages/Applications';
+import ApplicationDetail from './pages/ApplicationDetail';
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
@@ -12,7 +14,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/jobs/:jobId" element={<JobDetail />} />
-        {/* 他のルートは後で追加 */}
+        <Route path="/applications" element={<Applications />} />
+        <Route path="/applications/:applicationId" element={<ApplicationDetail />} />
       </Routes>
       <div>
         <a href="https://vite.dev" target="_blank">
