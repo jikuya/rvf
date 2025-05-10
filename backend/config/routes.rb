@@ -19,7 +19,7 @@ Rails.application.routes.draw do
       resources :jobs, only: [:index, :create] do
         resources :applications, only: [:create]
       end
-      resources :applications, only: [:index, :update]
+      resources :applications, only: [:index, :update, :show]
     end
   end
 

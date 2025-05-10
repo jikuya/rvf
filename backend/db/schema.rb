@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_09_132240) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_10_135206) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -63,12 +63,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_132240) do
     t.index ["email"], name: "index_companies_on_email", unique: true
   end
 
+  create_table "job_applications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.bigint "job_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "status", default: "pending", null: false
+    t.index ["job_id"], name: "index_job_applications_on_job_id"
+  end
+
   create_table "jobs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", null: false
     t.text "description", null: false
     t.bigint "company_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "location", null: false
+    t.string "salary", null: false
     t.index ["company_id"], name: "index_jobs_on_company_id"
     t.index ["title"], name: "index_jobs_on_title"
   end
@@ -77,5 +89,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_132240) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "applications", "companies"
   add_foreign_key "applications", "jobs"
+  add_foreign_key "job_applications", "jobs"
   add_foreign_key "jobs", "companies"
 end
