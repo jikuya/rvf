@@ -20,6 +20,8 @@ const ApplicationDetail: React.FC = () => {
   const [application, setApplication] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   useEffect(() => {
     const fetchApplication = async () => {
@@ -42,6 +44,7 @@ const ApplicationDetail: React.FC = () => {
 
         const data = await response.json();
         setApplication(data);
+        setSelectedStatus(data.status);
       } catch (err) {
         setError(err instanceof Error ? err.message : '応募情報の取得に失敗しました');
       } finally {
@@ -52,6 +55,38 @@ const ApplicationDetail: React.FC = () => {
     fetchApplication();
   }, [applicationId]);
 
+  const handleStatusChange = async () => {
+    if (!application) return;
+
+    setUpdating(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('認証が必要です');
+      }
+
+      const response = await fetch(`/api/v1/applications/${applicationId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: selectedStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('ステータスの更新に失敗しました');
+      }
+
+      const updatedApplication = await response.json();
+      setApplication(updatedApplication);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'ステータスの更新に失敗しました');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const getStatusText = (status: string) => {
     const statusTexts = {
       pending: '応募済み',
@@ -61,6 +96,17 @@ const ApplicationDetail: React.FC = () => {
       rejected: '不採用',
     };
     return statusTexts[status as keyof typeof statusTexts] || status;
+  };
+
+  const getStatusColor = (status: string) => {
+    const colors = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      screening: 'bg-blue-100 text-blue-800',
+      interview: 'bg-purple-100 text-purple-800',
+      offer: 'bg-green-100 text-green-800',
+      rejected: 'bg-red-100 text-red-800',
+    };
+    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
   if (loading) {
@@ -122,7 +168,35 @@ const ApplicationDetail: React.FC = () => {
 
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-2">ステータス</h2>
-            <p className="text-lg font-medium">{getStatusText(application.status)}</p>
+            <div className="flex items-center space-x-4">
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              >
+                <option value="pending">応募済み</option>
+                <option value="screening">書類選考中</option>
+                <option value="interview">面接中</option>
+                <option value="offer">内定</option>
+                <option value="rejected">不採用</option>
+              </select>
+              <button
+                onClick={handleStatusChange}
+                disabled={updating || selectedStatus === application.status}
+                className={`px-4 py-2 rounded-md text-white ${
+                  updating || selectedStatus === application.status
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+              >
+                {updating ? '更新中...' : '更新'}
+              </button>
+            </div>
+            <div className="mt-2">
+              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(application.status)}`}>
+                {getStatusText(application.status)}
+              </span>
+            </div>
           </div>
 
           <div className="mb-6">
