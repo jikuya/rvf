@@ -11,7 +11,6 @@ import {
   Alert,
   Divider,
   Chip,
-  Grid,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';

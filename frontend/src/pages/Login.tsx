@@ -27,7 +27,7 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('/login', { email, password });
+      const response = await axios.post<{ token: string }>('/login', { email, password });
       login(response.data.token);
       navigate('/applications');
     } catch (err) {
