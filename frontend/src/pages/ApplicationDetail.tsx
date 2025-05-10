@@ -1,6 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {
+  Container,
+  Typography,
+  Paper,
+  Box,
+  Button,
+  CircularProgress,
+  Alert,
+  Divider,
+  Chip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
 
 interface Application {
   id: number;
@@ -18,184 +35,171 @@ interface Application {
 }
 
 const ApplicationDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { applicationId } = useParams<{ applicationId: string }>();
   const [application, setApplication] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const response = await axios.get(`/api/v1/applications/${id}`);
+        const response = await axios.get<Application>(`/applications/${applicationId}`);
         setApplication(response.data);
+        setStatus(response.data.status);
       } catch (err) {
-        setError('応募詳細の取得に失敗しました。');
+        setError('応募情報の取得に失敗しました');
       } finally {
         setLoading(false);
       }
     };
 
     fetchApplication();
-  }, [id]);
+  }, [applicationId]);
 
   const handleStatusChange = async (newStatus: string) => {
-    if (!application) return;
-
-    setUpdating(true);
     try {
-      const response = await axios.patch(`/api/v1/applications/${id}`, {
-        status: newStatus
+      const response = await axios.patch<Application>(`/applications/${applicationId}`, {
+        status: newStatus,
       });
+      setStatus(newStatus);
       setApplication(response.data);
     } catch (err) {
-      setError('ステータスの更新に失敗しました。');
-    } finally {
-      setUpdating(false);
+      setError('ステータスの更新に失敗しました');
     }
-  };
-
-  const getStatusLabel = (status: string) => {
-    const statusMap: { [key: string]: string } = {
-      pending: '応募中',
-      screening: '書類選考中',
-      interview: '面接中',
-      offer: '内定',
-      rejected: '不採用'
-    };
-    return statusMap[status] || status;
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
+      <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Container>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      </div>
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
     );
   }
 
   if (!application) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-          応募が見つかりませんでした。
-        </div>
-      </div>
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">応募情報が見つかりません</Alert>
+      </Container>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">応募詳細</h1>
-        <button
-          onClick={() => navigate('/applications')}
-          className="text-blue-600 hover:text-blue-900"
-        >
-          ← 一覧に戻る
-        </button>
-      </div>
+    <Container>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h4" component="h1">
+          応募詳細
+        </Typography>
+        <Button variant="outlined" onClick={() => navigate('/applications')}>
+          一覧に戻る
+        </Button>
+      </Box>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="p-6">
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">応募者情報</h2>
-              <dl className="space-y-4">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">お名前</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{application.name}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">メールアドレス</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{application.email}</dd>
-                </div>
-                {application.phone && (
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">電話番号</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{application.phone}</dd>
-                  </div>
-                )}
-              </dl>
-            </div>
+      <Paper sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              基本情報
+            </Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  名前
+                </Typography>
+                <Typography variant="body1">{application.name}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  メールアドレス
+                </Typography>
+                <Typography variant="body1">{application.email}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  電話番号
+                </Typography>
+                <Typography variant="body1">{application.phone || '未設定'}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  応募日
+                </Typography>
+                <Typography variant="body1">
+                  {format(new Date(application.created_at), 'yyyy年MM月dd日', {
+                    locale: ja,
+                  })}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-4">求人情報</h2>
-              <dl className="space-y-4">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">求人タイトル</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{application.job.title}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">応募日時</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {new Date(application.created_at).toLocaleString('ja-JP')}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          </div>
+          <Divider />
 
-          {application.cover_letter && (
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">カバーレター</h2>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-900 whitespace-pre-wrap">
-                  {application.cover_letter}
-                </p>
-              </div>
-            </div>
-          )}
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              求人情報
+            </Typography>
+            <Typography variant="body1">{application.job.title}</Typography>
+          </Box>
 
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">履歴書</h2>
-            {application.resume_url ? (
-              <a
+          <Divider />
+
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              カバーレター
+            </Typography>
+            <Paper variant="outlined" sx={{ p: 2 }}>
+              <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>
+                {application.cover_letter || 'カバーレターはありません'}
+              </Typography>
+            </Paper>
+          </Box>
+
+          <Divider />
+
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="h6">ステータス</Typography>
+              <FormControl sx={{ minWidth: 200 }}>
+                <InputLabel>ステータス</InputLabel>
+                <Select
+                  value={status}
+                  label="ステータス"
+                  onChange={(e) => handleStatusChange(e.target.value)}
+                >
+                  <MenuItem value="pending">審査中</MenuItem>
+                  <MenuItem value="accepted">採用</MenuItem>
+                  <MenuItem value="rejected">不採用</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
+
+          {application.resume_url && (
+            <Box>
+              <Button
+                variant="contained"
                 href={application.resume_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
                 履歴書をダウンロード
-              </a>
-            ) : (
-              <p className="text-sm text-gray-500">履歴書はアップロードされていません。</p>
-            )}
-          </div>
-
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">ステータス管理</h2>
-            <div className="flex space-x-4">
-              {['pending', 'screening', 'interview', 'offer', 'rejected'].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => handleStatusChange(status)}
-                  disabled={updating || application.status === status}
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${
-                    application.status === status
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {getStatusLabel(status)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

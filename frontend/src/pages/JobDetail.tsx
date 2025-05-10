@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import JobApplicationForm from '../components/JobApplicationForm';
+import axios from 'axios';
+import {
+  Container,
+  Typography,
+  Paper,
+  Box,
+  Button,
+  CircularProgress,
+  Alert,
+  Divider,
+  Chip,
+  Grid,
+} from '@mui/material';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
 
 interface Job {
   id: number;
@@ -9,29 +23,26 @@ interface Job {
   requirements: string;
   location: string;
   salary: string;
-  company: string;
+  employment_type: string;
+  status: string;
   created_at: string;
+  updated_at: string;
 }
 
 const JobDetail: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
-  const navigate = useNavigate();
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const response = await fetch(`/api/jobs/${jobId}`);
-        if (!response.ok) {
-          throw new Error('求人情報の取得に失敗しました');
-        }
-        const data = await response.json();
-        setJob(data);
+        const response = await axios.get<Job>(`/jobs/${jobId}`);
+        setJob(response.data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : '求人情報の取得に失敗しました');
+        setError('求人情報の取得に失敗しました');
       } finally {
         setLoading(false);
       }
@@ -40,79 +51,136 @@ const JobDetail: React.FC = () => {
     fetchJob();
   }, [jobId]);
 
-  const handleApplicationSubmit = () => {
-    setShowApplicationForm(false);
-    // 応募完了後の処理（例：成功メッセージの表示など）
-  };
-
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">読み込み中...</div>;
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Container>
+    );
   }
 
-  if (error || !job) {
+  if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-red-600">
-        {error || '求人情報が見つかりませんでした'}
-      </div>
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    );
+  }
+
+  if (!job) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">求人情報が見つかりません</Alert>
+      </Container>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="text-blue-600 hover:text-blue-800 mb-4"
-        >
-          ← 戻る
-        </button>
-        
-        <h1 className="text-3xl font-bold mb-4">{job.title}</h1>
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <p className="text-gray-600">会社名</p>
-              <p className="font-semibold">{job.company}</p>
-            </div>
-            <div>
-              <p className="text-gray-600">勤務地</p>
-              <p className="font-semibold">{job.location}</p>
-            </div>
-            <div>
-              <p className="text-gray-600">給与</p>
-              <p className="font-semibold">{job.salary}</p>
-            </div>
-            <div>
-              <p className="text-gray-600">掲載日</p>
-              <p className="font-semibold">
-                {new Date(job.created_at).toLocaleDateString('ja-JP')}
-              </p>
-            </div>
-          </div>
+    <Container>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h4" component="h1">
+          求人詳細
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button variant="outlined" onClick={() => navigate('/jobs')}>
+            一覧に戻る
+          </Button>
+          <Button variant="contained" onClick={() => navigate(`/jobs/${jobId}/edit`)}>
+            編集
+          </Button>
+        </Box>
+      </Box>
 
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">職務内容</h2>
-            <p className="whitespace-pre-wrap">{job.description}</p>
-          </div>
+      <Paper sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box>
+            <Typography variant="h5" gutterBottom>
+              {job.title}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Chip
+                label={job.employment_type === 'full_time' ? '正社員' : '契約社員'}
+                color="primary"
+                size="small"
+              />
+              <Chip
+                label={job.status === 'active' ? '募集中' : '募集終了'}
+                color={job.status === 'active' ? 'success' : 'default'}
+                size="small"
+              />
+            </Box>
+          </Box>
 
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">応募要件</h2>
-            <p className="whitespace-pre-wrap">{job.requirements}</p>
-          </div>
+          <Divider />
 
-          {!showApplicationForm ? (
-            <button
-              onClick={() => setShowApplicationForm(true)}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              この求人に応募する
-            </button>
-          ) : (
-            <JobApplicationForm onSubmit={handleApplicationSubmit} />
-          )}
-        </div>
-      </div>
-    </div>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              基本情報
+            </Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  勤務地
+                </Typography>
+                <Typography variant="body1">{job.location}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  給与
+                </Typography>
+                <Typography variant="body1">{job.salary}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  作成日
+                </Typography>
+                <Typography variant="body1">
+                  {format(new Date(job.created_at), 'yyyy年MM月dd日', {
+                    locale: ja,
+                  })}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  更新日
+                </Typography>
+                <Typography variant="body1">
+                  {format(new Date(job.updated_at), 'yyyy年MM月dd日', {
+                    locale: ja,
+                  })}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          <Divider />
+
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              仕事内容
+            </Typography>
+            <Paper variant="outlined" sx={{ p: 2 }}>
+              <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>
+                {job.description}
+              </Typography>
+            </Paper>
+          </Box>
+
+          <Divider />
+
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              応募要件
+            </Typography>
+            <Paper variant="outlined" sx={{ p: 2 }}>
+              <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>
+                {job.requirements}
+              </Typography>
+            </Paper>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 
