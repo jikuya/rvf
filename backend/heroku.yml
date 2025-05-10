@@ -9,7 +9,7 @@ setup:
 build:
   docker:
     web:
-      dockerfile: backend/Dockerfile
+      dockerfile: Dockerfile
       target: web
 
 run:
