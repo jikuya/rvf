@@ -13,6 +13,11 @@ services:
       - mysql_data:/var/lib/mysql       # データを永続化するボリューム
     networks:
       - rvf-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   
   backend:
     build:
@@ -26,7 +31,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       DATABASE_URL: mysql2://rvf_user:rvf_pass@mysql:3306/rvf_development
       RAILS_ENV: development
