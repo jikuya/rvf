@@ -17,7 +17,6 @@ import {
   Alert,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
 
 interface Application {
   id: number;

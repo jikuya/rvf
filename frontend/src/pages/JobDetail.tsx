@@ -13,7 +13,6 @@ import {
   Chip,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
 
 interface Job {
   id: number;
