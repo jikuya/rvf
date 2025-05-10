@@ -134,9 +134,7 @@ const ApplicationDetail: React.FC = () => {
                   応募日
                 </Typography>
                 <Typography variant="body1">
-                  {format(new Date(application.created_at), 'yyyy年MM月dd日', {
-                    locale: ja,
-                  })}
+                  {format(new Date(application.created_at), 'yyyy年MM月dd日')}
                 </Typography>
               </Box>
             </Box>

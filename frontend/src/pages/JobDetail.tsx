@@ -134,9 +134,7 @@ const JobDetail: React.FC = () => {
                   作成日
                 </Typography>
                 <Typography variant="body1">
-                  {format(new Date(job.created_at), 'yyyy年MM月dd日', {
-                    locale: ja,
-                  })}
+                  {format(new Date(job.created_at), 'yyyy年MM月dd日')}
                 </Typography>
               </Box>
               <Box>
@@ -144,9 +142,7 @@ const JobDetail: React.FC = () => {
                   更新日
                 </Typography>
                 <Typography variant="body1">
-                  {format(new Date(job.updated_at), 'yyyy年MM月dd日', {
-                    locale: ja,
-                  })}
+                  {format(new Date(job.updated_at), 'yyyy年MM月dd日')}
                 </Typography>
               </Box>
             </Box>

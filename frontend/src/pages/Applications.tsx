@@ -116,9 +116,7 @@ const Applications: React.FC = () => {
             {applications.map((application) => (
               <TableRow key={application.id}>
                 <TableCell>
-                  {format(new Date(application.created_at), 'yyyy年MM月dd日', {
-                    locale: ja,
-                  })}
+                  {format(new Date(application.created_at), 'yyyy年MM月dd日')}
                 </TableCell>
                 <TableCell>{application.name}</TableCell>
                 <TableCell>{application.email}</TableCell>
