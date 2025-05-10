@@ -45,6 +45,17 @@ services:
     networks:
       - rvf-network
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app:cached
+    environment:
+      BROWSER: none
+
 networks:
   rvf-network:
     driver: bridge
