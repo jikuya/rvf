@@ -10,7 +10,9 @@ RUN apk add --no-cache \
     pkgconf \
     tzdata \
     git \
-    bash
+    bash \
+    imagemagick \
+    imagemagick-dev
 
 WORKDIR /app
 

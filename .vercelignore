@@ -1,0 +1,10 @@
+# .vercelignore
+node_modules/
+.git/
+.DS_Store
+*.log
+coverage/
+tests/
+docs/
+.env*
+

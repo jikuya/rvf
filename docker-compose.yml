@@ -1,0 +1,48 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: rvf-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password   # rootユーザーのパスワードを設定（本番ではより強力な値に）
+      MYSQL_DATABASE: rvf_development # デフォルトで作成するデータベース名
+      MYSQL_USER: rvf_user            # 一般ユーザー（任意）
+      MYSQL_PASSWORD: rvf_pass        # 一般ユーザーのパスワード（任意）
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql       # データを永続化するボリューム
+    networks:
+      - rvf-network
+  
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rvf-rails
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:create db:migrate && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ./backend:/app                # ソースコードをコンテナ内にマウント（ホットリロード用）
+      - bundle_data:/usr/local/bundle
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    environment:
+      DATABASE_URL: mysql2://rvf_user:rvf_pass@mysql:3306/rvf_development
+      RAILS_ENV: development
+      SECRET_KEY_BASE: development_secret_key_base
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_BUCKET: ${AWS_BUCKET}
+      ADMIN_PASSWORD: rvf_20250505
+    networks:
+      - rvf-network
+
+networks:
+  rvf-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  bundle_data:

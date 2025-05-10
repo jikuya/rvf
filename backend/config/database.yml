@@ -12,15 +12,16 @@
 default: &default
   adapter: mysql2
   encoding: utf8mb4
+  collation: utf8mb4_unicode_ci
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= ENV.fetch("DATABASE_USER") { "root" } %>
-  password: <%= ENV.fetch("DATABASE_PASSWORD") { "password" } %>
-  host: <%= ENV.fetch("DATABASE_HOST") { "db" } %>
+  username: <%= ENV.fetch("DATABASE_USER") { "rvf_user" } %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD") { "rvf_pass" } %>
+  host: <%= ENV.fetch("DATABASE_HOST") { "mysql" } %>
   port: 3306
 
 development:
   <<: *default
-  database: <%= ENV.fetch("DATABASE_NAME") { "rvf_development" } %>
+  database: rvf_development
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -52,6 +53,7 @@ test:
 production:
   adapter: mysql2
   encoding: utf8mb4
+  collation: utf8mb4_unicode_ci
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
   url: <%= ENV['JAWSDB_URL'] %>
   timeout: 5000

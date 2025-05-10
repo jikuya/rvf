@@ -1,0 +1,16 @@
+setup:
+  addons:
+    - plan: jawsdb
+    - plan: mailgun:starter
+  config:
+    RAILS_ENV: production
+    RACK_ENV: production
+
+build:
+  docker:
+    web:
+      dockerfile: backend/Dockerfile
+      target: web
+
+run:
+  web: bundle exec rails server -p $PORT 
