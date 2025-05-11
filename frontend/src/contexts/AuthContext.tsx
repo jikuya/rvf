@@ -17,6 +17,7 @@ interface AuthContextType {
   admin: Admin | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,20 +33,24 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [admin, setAdmin] = useState<Admin | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
-      // 管理者情報を取得
       api.get('/api/v1/me')
         .then(response => {
           const data = response.data as { admin: any };
           setAdmin(data.admin);
+          setIsLoading(false);
         })
         .catch(() => {
           logout();
+          setIsLoading(false);
         });
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -68,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, admin, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, admin, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
