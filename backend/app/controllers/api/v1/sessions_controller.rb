@@ -8,13 +8,6 @@ module Api
         if @admin&.authenticate(params[:password])
           token = JsonWebToken.encode(admin_id: @admin.id)
           render json: { token: token, admin: @admin }, status: :ok
-          return
-        end
-
-        @company = Company.find_by(email: params[:email])
-        if @company&.authenticate(params[:password])
-          token = JsonWebToken.encode(company_id: @company.id)
-          render json: { token: token, company: @company }, status: :ok
         else
           render json: { error: 'Invalid email or password' }, status: :unauthorized
         end
@@ -27,7 +20,7 @@ module Api
 
       def me
         if current_admin
-          render json: { user: current_admin }
+          render json: { admin: current_admin }
         else
           render json: { error: 'Not logged in' }, status: :unauthorized
         end

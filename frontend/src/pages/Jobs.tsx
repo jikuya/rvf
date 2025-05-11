@@ -1,31 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import {
   Container,
   Typography,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  Box,
   Button,
-  Chip,
   CircularProgress,
   Alert,
-  Box,
+  Chip,
 } from '@mui/material';
-import { format } from 'date-fns';
+import api from '../utils/axios';
 
 interface Job {
   id: number;
   title: string;
+  description: string;
+  requirements: string;
   location: string;
+  salary: string;
   employment_type: string;
   status: string;
-  created_at: string;
 }
 
 const Jobs: React.FC = () => {
@@ -37,7 +32,7 @@ const Jobs: React.FC = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get<Job[]>('/jobs');
+        const response = await api.get<Job[]>('/jobs');
         setJobs(response.data);
       } catch (err) {
         setError('求人情報の取得に失敗しました');
@@ -89,59 +84,49 @@ const Jobs: React.FC = () => {
 
   return (
     <Container>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h4" component="h1">
           求人一覧
         </Typography>
-        <Button variant="contained" onClick={() => navigate('/jobs/new')}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/jobs/new')}
+        >
           新規求人作成
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>作成日</TableCell>
-              <TableCell>タイトル</TableCell>
-              <TableCell>勤務地</TableCell>
-              <TableCell>雇用形態</TableCell>
-              <TableCell>ステータス</TableCell>
-              <TableCell>操作</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {jobs.map((job) => (
-              <TableRow key={job.id}>
-                <TableCell>
-                  {format(new Date(job.created_at), 'yyyy年MM月dd日')}
-                </TableCell>
-                <TableCell>{job.title}</TableCell>
-                <TableCell>{job.location}</TableCell>
-                <TableCell>
-                  {job.employment_type === 'full_time' ? '正社員' : '契約社員'}
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={getStatusLabel(job.status)}
-                    color={getStatusColor(job.status) as any}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => navigate(`/jobs/${job.id}`)}
-                  >
-                    詳細
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {jobs.map((job) => (
+        <Paper key={job.id} sx={{ p: 3, mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {job.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {job.location} | {job.employment_type} | {job.salary}
+              </Typography>
+              <Typography variant="body1" sx={{ mt: 2 }}>
+                {job.description}
+              </Typography>
+            </Box>
+            <Box>
+              <Chip
+                label={getStatusLabel(job.status)}
+                color={getStatusColor(job.status)}
+                sx={{ mr: 1 }}
+              />
+              <Button
+                variant="outlined"
+                onClick={() => navigate(`/jobs/${job.id}`)}
+              >
+                詳細
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      ))}
     </Container>
   );
 };
