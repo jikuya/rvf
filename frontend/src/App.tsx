@@ -1,61 +1,37 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { AuthProvider } from './contexts/AuthContext';
-import PrivateRoute from './components/PrivateRoute';
-import Header from './components/Header';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from './theme';
+import Layout from './components/Layout';
 import Login from './pages/Login';
+import Jobs from './pages/Jobs';
+import JobDetail from './pages/JobDetail';
+import JobForm from './pages/JobForm';
 import Applications from './pages/Applications';
 import ApplicationDetail from './pages/ApplicationDetail';
-import JobDetail from './pages/JobDetail';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
+import JobApplicationForm from './pages/JobApplicationForm';
+import PrivateRoute from './components/PrivateRoute';
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <Router>
-          <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <Header />
-            <main style={{ flex: 1, padding: '2rem' }}>
-              <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route
-                    path="/applications"
-                    element={
-                      <PrivateRoute>
-                        <Applications />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/applications/:applicationId"
-                    element={
-                      <PrivateRoute>
-                        <ApplicationDetail />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route path="/" element={<Navigate to="/applications" replace />} />
-                  <Route path="/jobs/:jobId" element={<JobDetail />} />
-                </Routes>
-              </div>
-            </main>
-          </div>
-        </Router>
-      </AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate to="/jobs" replace />} />
+            <Route path="jobs" element={<PrivateRoute><Jobs /></PrivateRoute>} />
+            <Route path="jobs/:jobId" element={<PrivateRoute><JobDetail /></PrivateRoute>} />
+            <Route path="jobs/new" element={<PrivateRoute><JobForm /></PrivateRoute>} />
+            <Route path="jobs/:jobId/edit" element={<PrivateRoute><JobForm /></PrivateRoute>} />
+            <Route path="jobs/:jobId/apply" element={<JobApplicationForm />} />
+            <Route path="applications" element={<PrivateRoute><Applications /></PrivateRoute>} />
+            <Route path="applications/:applicationId" element={<PrivateRoute><ApplicationDetail /></PrivateRoute>} />
+          </Route>
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 };
