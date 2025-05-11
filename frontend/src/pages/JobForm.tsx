@@ -75,9 +75,16 @@ const JobForm: React.FC = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string; value: string } }
+  ) => {
     const { name, value } = e.target;
-    setJob((prev) => ({ ...prev, [name as string]: value }));
+    setJob((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (e: { target: { name: string; value: string } }) => {
+    const { name, value } = e.target;
+    setJob((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -121,7 +128,7 @@ const JobForm: React.FC = () => {
               <Select
                 name="employment_type"
                 value={job.employment_type}
-                onChange={handleChange}
+                onChange={handleSelectChange}
                 label="雇用形態"
               >
                 <MenuItem value="full_time">正社員</MenuItem>
@@ -134,7 +141,7 @@ const JobForm: React.FC = () => {
               <Select
                 name="status"
                 value={job.status}
-                onChange={handleChange}
+                onChange={handleSelectChange}
                 label="ステータス"
               >
                 <MenuItem value="active">募集中</MenuItem>
