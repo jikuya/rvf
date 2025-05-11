@@ -8,8 +8,8 @@ import Login from './pages/Login';
 import Jobs from './pages/Jobs';
 import JobDetail from './pages/JobDetail';
 import JobForm from './pages/JobForm';
-import Applications from './pages/Applications';
-import ApplicationDetail from './pages/ApplicationDetail';
+import JobApplications from './pages/JobApplications';
+import JobApplicationDetail from './pages/JobApplicationDetail';
 import JobApplicationForm from './pages/JobApplicationForm';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
@@ -29,8 +29,8 @@ const App: React.FC = () => {
               <Route path="jobs/new" element={<PrivateRoute><JobForm /></PrivateRoute>} />
               <Route path="jobs/:jobId/edit" element={<PrivateRoute><JobForm /></PrivateRoute>} />
               <Route path="jobs/:jobId/apply" element={<JobApplicationForm />} />
-              <Route path="applications" element={<PrivateRoute><Applications /></PrivateRoute>} />
-              <Route path="applications/:applicationId" element={<PrivateRoute><ApplicationDetail /></PrivateRoute>} />
+              <Route path="job-applications" element={<PrivateRoute><JobApplications /></PrivateRoute>} />
+              <Route path="job-applications/:applicationId" element={<PrivateRoute><JobApplicationDetail /></PrivateRoute>} />
             </Route>
           </Routes>
         </Router>
