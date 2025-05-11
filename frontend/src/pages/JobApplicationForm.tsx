@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axios';
 import {
   Container,
   Typography,
@@ -33,7 +33,7 @@ const JobApplicationForm: React.FC = () => {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const response = await axios.get<Job>(`/jobs/${jobId}`);
+        const response = await api.get<Job>(`/jobs/${jobId}`);
         setJob(response.data);
       } catch (err) {
         setError('求人情報の取得に失敗しました');
@@ -48,7 +48,7 @@ const JobApplicationForm: React.FC = () => {
     setError(null);
 
     try {
-      await axios.post(`/jobs/${jobId}/apply`, formData);
+      await api.post(`/jobs/${jobId}/apply`, formData);
       navigate(`/jobs/${jobId}`, { state: { message: '応募が完了しました' } });
     } catch (err) {
       setError('応募の送信に失敗しました');

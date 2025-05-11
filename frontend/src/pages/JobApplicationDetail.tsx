@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axios';
 import {
   Container,
   Typography,
@@ -37,7 +37,7 @@ const JobApplicationDetail: React.FC = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const response = await axios.get<JobApplication>(`/job-applications/${applicationId}`);
+        const response = await api.get<JobApplication>(`/job-applications/${applicationId}`);
         setApplication(response.data);
       } catch (err) {
         setError('応募情報の取得に失敗しました');
@@ -51,7 +51,7 @@ const JobApplicationDetail: React.FC = () => {
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      await axios.patch(`/job-applications/${applicationId}`, { status: newStatus });
+      await api.patch(`/job-applications/${applicationId}`, { status: newStatus });
       setApplication((prev) => prev ? { ...prev, status: newStatus } : null);
     } catch (err) {
       setError('ステータスの更新に失敗しました');

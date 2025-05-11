@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axios';
 import {
   Container,
   Typography,
@@ -40,7 +40,7 @@ const JobApplications: React.FC = () => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await axios.get<JobApplication[]>('/job-applications');
+        const response = await api.get<JobApplication[]>('/job-applications');
         setApplications(response.data);
       } catch (err) {
         setError('応募情報の取得に失敗しました');

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axios';
 import {
   Container,
   Typography,
@@ -43,7 +43,7 @@ const ApplicationDetail: React.FC = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const response = await axios.get<Application>(`/applications/${applicationId}`);
+        const response = await api.get<Application>(`/applications/${applicationId}`);
         setApplication(response.data);
         setStatus(response.data.status);
       } catch (err) {
@@ -58,7 +58,7 @@ const ApplicationDetail: React.FC = () => {
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      const response = await axios.patch<Application>(`/applications/${applicationId}`, {
+      const response = await api.patch<Application>(`/applications/${applicationId}`, {
         status: newStatus,
       });
       setStatus(newStatus);
