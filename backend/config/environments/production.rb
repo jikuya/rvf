@@ -86,7 +86,7 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'rvf-f1cc04378d39.herokuapp.com' }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.default_from = 'noreply@rvf-f1cc04378d39.herokuapp.com'
+  config.action_mailer.default_options = { from: 'noreply@rvf-f1cc04378d39.herokuapp.com' }
   config.action_mailer.smtp_settings = {
     address: ENV['MAILGUN_SMTP_SERVER'],
     port: ENV['MAILGUN_SMTP_PORT'],
