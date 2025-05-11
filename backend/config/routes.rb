@@ -8,8 +8,8 @@ Rails.application.routes.draw do
       delete "/logout", to: "sessions#destroy"
       get "/me", to: "sessions#me"
 
-      resources :companies, only: [ :create ]
-      resources :jobs, only: [ :index, :create ]
+      resources :companies, only: [ :index, :create, :show, :update ]
+      resources :jobs, only: [ :index, :create, :show, :update ]
       resources :job_applications, only: [ :index, :create, :show, :update ]
     end
   end

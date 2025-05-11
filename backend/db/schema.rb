@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_11_033238) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_11_113224) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -68,6 +68,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_033238) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "description"
+    t.string "website"
+    t.string "industry"
+    t.string "size"
+    t.integer "founded_year"
+    t.string "location"
     t.index ["email"], name: "index_companies_on_email", unique: true
   end
 
@@ -91,6 +97,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_033238) do
     t.datetime "updated_at", null: false
     t.string "location", null: false
     t.string "salary", null: false
+    t.text "requirements"
+    t.string "salary_range"
+    t.string "employment_type"
     t.index ["company_id"], name: "index_jobs_on_company_id"
     t.index ["title"], name: "index_jobs_on_title"
   end

@@ -4,6 +4,7 @@ FactoryBot.define do
     sequence(:email) { |n| "applicant#{n}@example.com" }
     status { 'pending' }
     association :job
+    association :company
 
     after(:build) do |job_application|
       job_application.resume.attach(
