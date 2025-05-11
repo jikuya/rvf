@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../utils/axios';
+import { axiosInstance as api } from '../utils/axios';
 
 interface Admin {
   id: number;
@@ -38,9 +38,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (token) {
       setIsAuthenticated(true);
       // 管理者情報を取得
-      api.get<any>('/me')
+      api.get('/api/v1/me')
         .then(response => {
-          setAdmin(response.data.admin);
+          const data = response.data as { admin: any };
+          setAdmin(data.admin);
         })
         .catch(() => {
           logout();
@@ -50,8 +51,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await api.post<LoginResponse>('/api/v1/login', { email, password });
-      const { token, admin } = response.data;
+      const response = await api.post('/api/v1/login', { email, password });
+      const { token, admin } = response.data as LoginResponse;
       localStorage.setItem('token', token);
       setIsAuthenticated(true);
       setAdmin(admin);

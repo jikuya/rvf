@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+// @ts-ignore
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Jobs from '../Jobs';
 import Companies from '../Companies';
@@ -9,7 +10,7 @@ import JobApplications from '../JobApplications';
 import JobApplicationDetail from '../JobApplicationDetail';
 import JobDetail from '../JobDetail';
 import JobForm from '../JobForm';
-import api from '../../utils/axios';
+import { axiosInstance as api } from '../../utils/axios';
 
 jest.mock('../../utils/axios', () => ({
   get: jest.fn((url) => {

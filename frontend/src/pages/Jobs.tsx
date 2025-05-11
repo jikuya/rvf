@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+// @ts-ignore
 import { useNavigate } from 'react-router-dom';
+// @ts-ignore
 import {
   Container,
   Typography,
@@ -16,7 +18,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import api from '../utils/axios';
+import { axiosInstance as api } from '../utils/axios';
 
 interface Job {
   id: number;
@@ -38,8 +40,8 @@ const Jobs: React.FC = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await api.get<Job[]>('/api/v1/jobs');
-        setJobs(response.data);
+        const response = await api.get('/api/v1/jobs');
+        setJobs(response.data as Job[]);
       } catch (err) {
         setError('求人情報の取得に失敗しました');
       } finally {

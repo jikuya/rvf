@@ -1,29 +1,30 @@
-import axios from 'axios';
+const axios = require('axios');
+import { getApiBaseUrl } from './env';
 
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
+export const axiosInstance = axios.create({
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
 });
 
-instance.interceptors.request.use(
-  (config) => {
+axiosInstance.interceptors.request.use(
+  (config: any) => {
     const token = localStorage.getItem('token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  (error: any) => {
     return Promise.reject(error);
   }
 );
 
-instance.interceptors.response.use(
-  (response) => response,
-  (error) => {
+axiosInstance.interceptors.response.use(
+  (response: any) => response,
+  (error: any) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
@@ -32,4 +33,4 @@ instance.interceptors.response.use(
   }
 );
 
-export default instance; 
+// export default axiosInstance; 

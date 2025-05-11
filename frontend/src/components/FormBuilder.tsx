@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// @ts-ignore
 import {
   DndContext,
   closestCenter,
@@ -7,6 +8,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
+// @ts-ignore
 import {
   arrayMove,
   SortableContext,

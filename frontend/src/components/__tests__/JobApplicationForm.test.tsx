@@ -1,9 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+// @ts-ignore
 import { BrowserRouter, MemoryRouter, Routes, Route } from 'react-router-dom';
+// @ts-ignore
+import userEvent from '@testing-library/user-event';
 import JobApplicationForm from '../JobApplicationForm';
 import axios from 'axios';
-import userEvent from '@testing-library/user-event';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;

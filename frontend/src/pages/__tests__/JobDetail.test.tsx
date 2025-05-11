@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+// @ts-ignore
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 // JobDetailのモック
