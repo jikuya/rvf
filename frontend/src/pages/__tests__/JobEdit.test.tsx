@@ -1,5 +1,4 @@
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
-// @ts-ignore
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 import JobEdit from '../JobEdit';
@@ -116,7 +115,7 @@ describe('JobEdit', () => {
   });
 
   it('shows loading state', () => {
-    // @ts-ignore
+    // @ts-expect-error
     mockedAxios.get.mockImplementation(() => new Promise(() => {}));
 
     render(

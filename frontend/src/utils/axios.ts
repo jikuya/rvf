@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 import { getApiBaseUrl } from './env';
 
 export const axiosInstance = axios.create({
@@ -11,21 +12,25 @@ export const axiosInstance = axios.create({
 
 if (process.env.NODE_ENV !== 'test') {
   axiosInstance.interceptors.request.use(
-    (config: any) => {
+    (config: AxiosRequestConfig) => {
       const token = localStorage.getItem('token');
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
     },
-    (error: any) => {
+    (error: AxiosError) => {
       return Promise.reject(error);
     }
   );
 
   axiosInstance.interceptors.response.use(
-    (response: any) => response,
-    (error: any) => {
+    (response: AxiosResponse) => {
+      const data = response.data as { admin: Admin };
+      setAdmin(data.admin);
+      return response;
+    },
+    (error: AxiosError) => {
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
         window.location.href = '/login';

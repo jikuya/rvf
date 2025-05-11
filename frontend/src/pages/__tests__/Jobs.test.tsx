@@ -66,7 +66,7 @@ describe('Jobs', () => {
   });
 
   it('shows loading state', () => {
-    // @ts-ignore
+    // @ts-expect-error
     mockedAxios.get.mockImplementation(() => new Promise(() => {}));
 
     render(

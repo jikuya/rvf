@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(true);
       api.get('/api/v1/me')
         .then(response => {
-          const data = response.data as { admin: any };
+          const data = response.data as { admin: Admin };
           setAdmin(data.admin);
           setIsLoading(false);
         })

@@ -1,8 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-// @ts-ignore
 import { BrowserRouter, MemoryRouter, Routes, Route } from 'react-router-dom';
-// @ts-ignore
 import userEvent from '@testing-library/user-event';
 import JobApplicationForm from '../JobApplicationForm';
 import axios from 'axios';
@@ -19,7 +17,7 @@ const mockInterceptors = {
 mockedAxios.create.mockReturnValue({
   interceptors: mockInterceptors,
   post: jest.fn(),
-} as any);
+} as unknown as typeof axios);
 
 describe('JobApplicationForm', () => {
   const mockFields: FormField[] = [
@@ -46,7 +44,6 @@ describe('JobApplicationForm', () => {
   it('renders form fields correctly', () => {
     render(
       <JobApplicationForm
-        jobId={1}
         formDefinition={mockFields}
         onSubmit={mockOnSubmit}
       />
@@ -59,7 +56,6 @@ describe('JobApplicationForm', () => {
   it('submits form data correctly', async () => {
     render(
       <JobApplicationForm
-        jobId={1}
         formDefinition={mockFields}
         onSubmit={mockOnSubmit}
       />
@@ -89,7 +85,7 @@ describe('JobApplicationForm', () => {
 
     render(
       <BrowserRouter>
-        <JobApplicationForm onSubmit={mockOnSubmitWithError} jobId={1} formDefinition={mockFields} />
+        <JobApplicationForm onSubmit={mockOnSubmitWithError} formDefinition={mockFields} />
       </BrowserRouter>
     );
 
@@ -104,7 +100,7 @@ describe('JobApplicationForm', () => {
   it('renders all form fields', () => {
     render(
       <BrowserRouter>
-        <JobApplicationForm onSubmit={mockOnSubmit} jobId={1} formDefinition={mockFields} />
+        <JobApplicationForm onSubmit={mockOnSubmit} formDefinition={mockFields} />
       </BrowserRouter>
     );
     expect(screen.getByLabelText(/氏名/)).toBeInTheDocument();
@@ -117,7 +113,7 @@ describe('JobApplicationForm', () => {
     render(
       <MemoryRouter initialEntries={['/jobs/1']}>
         <Routes>
-          <Route path="/jobs/:jobId" element={<JobApplicationForm onSubmit={mockOnSubmit} jobId={1} formDefinition={mockFields} />} />
+          <Route path="/jobs/:jobId" element={<JobApplicationForm onSubmit={mockOnSubmit} formDefinition={mockFields} />} />
         </Routes>
       </MemoryRouter>
     );
@@ -143,7 +139,7 @@ describe('JobApplicationForm', () => {
 
     render(
       <BrowserRouter>
-        <JobApplicationForm onSubmit={mockOnSubmitWithError} jobId={1} formDefinition={mockFields} />
+        <JobApplicationForm onSubmit={mockOnSubmitWithError} formDefinition={mockFields} />
       </BrowserRouter>
     );
 
@@ -158,7 +154,7 @@ describe('JobApplicationForm', () => {
   it('validates required fields', async () => {
     render(
       <BrowserRouter>
-        <JobApplicationForm onSubmit={mockOnSubmit} jobId={1} formDefinition={mockFields} />
+        <JobApplicationForm onSubmit={mockOnSubmit} formDefinition={mockFields} />
       </BrowserRouter>
     );
 

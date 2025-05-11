@@ -11,11 +11,11 @@ import {
   Checkbox,
   IconButton,
   Typography,
-  Paper,
 } from '@mui/material';
-import { DragHandle as DragHandleIcon, Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, closestCenter } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
 import type { FormField } from '../types/form';
 import SortableItem from './SortableItem';
 
@@ -30,18 +30,17 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formDefinition, onSave, onCan
   const [editingField, setEditingField] = useState<FormField | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
-      setFields((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        const newItems = [...items];
-        const [removed] = newItems.splice(oldIndex, 1);
-        newItems.splice(newIndex, 0, removed);
-        return newItems;
-      });
-    }
+    if (!over || active.id === over.id) return;
+    setFields((items) => {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+      const newItems = [...items];
+      const [removed] = newItems.splice(oldIndex, 1);
+      newItems.splice(newIndex, 0, removed);
+      return newItems;
+    });
   };
 
   const handleAddField = () => {
@@ -130,7 +129,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ formDefinition, onSave, onCan
               select
               label="タイプ"
               value={editingField?.type || 'text'}
-              onChange={(e) => setEditingField(prev => prev ? { ...prev, type: e.target.value } : null)}
+              onChange={(e) => setEditingField(prev => prev ? { ...prev, type: e.target.value as import('../types/form').FormFieldType } : null)}
               fullWidth
               SelectProps={{
                 native: true,

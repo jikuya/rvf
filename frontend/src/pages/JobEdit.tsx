@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
-  Box,
   Alert,
   CircularProgress,
 } from '@mui/material';
@@ -32,7 +31,7 @@ export const JobEdit: React.FC = () => {
       try {
         const res = await axios.get<Job>(`/api/v1/jobs/${id}`);
         setJob(res.data);
-      } catch (e) {
+      } catch {
         setError('ジョブ情報の取得に失敗しました');
       } finally {
         setLoading(false);
@@ -52,7 +51,7 @@ export const JobEdit: React.FC = () => {
       });
       setSuccess(true);
       setJob({ ...job, form_definition: fields });
-    } catch (e) {
+    } catch {
       setError('フォーム定義の保存に失敗しました');
     } finally {
       setSaving(false);

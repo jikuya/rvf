@@ -11,29 +11,27 @@ import {
 import type { FormField } from '../types/form';
 
 interface JobApplicationFormProps {
-  jobId: number;
   formDefinition: FormField[];
   onSubmit: (data: any) => void;
 }
 
 const JobApplicationForm: React.FC<JobApplicationFormProps> = ({
-  jobId,
   formDefinition,
   onSubmit,
 }) => {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await onSubmit(formData);
-    } catch (err) {
+    } catch {
       setError('応募の送信に失敗しました');
     }
   };
 
-  const handleChange = (fieldId: string, value: any) => {
+  const handleChange = (fieldId: string, value: string) => {
     setFormData(prev => ({ ...prev, [fieldId]: value }));
   };
 

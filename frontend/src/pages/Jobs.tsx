@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// @ts-ignore
 import { useNavigate } from 'react-router-dom';
-// @ts-ignore
 import {
   Container,
   Typography,
@@ -42,7 +40,7 @@ const Jobs: React.FC = () => {
       try {
         const response = await api.get('/api/v1/jobs');
         setJobs(response.data as Job[]);
-      } catch (err) {
+      } catch {
         setError('求人情報の取得に失敗しました');
       } finally {
         setLoading(false);

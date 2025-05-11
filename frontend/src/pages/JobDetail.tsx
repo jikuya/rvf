@@ -39,7 +39,7 @@ const JobDetail: React.FC = () => {
       try {
         const response = await api.get<Job>(`/api/v1/jobs/${jobId}`);
         setJob(response.data);
-      } catch (err) {
+      } catch {
         setError('求人情報の取得に失敗しました');
       } finally {
         setLoading(false);
