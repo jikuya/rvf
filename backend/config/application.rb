@@ -42,6 +42,6 @@ module Backend
     config.api_only = true
 
     # Allow requests from Heroku domain
-    config.hosts << "rvf-f1cc04378d39.herokuapp.com"
+    config.hosts << "rvf-f1cc04378d39.herokuapp.com" if Rails.env.production?
   end
 end

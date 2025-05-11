@@ -1,8 +1,3 @@
-# The test environment is used exclusively to run your application's
-# test suite. You never need to work with it otherwise. Remember that
-# your test database is "scratch space" for the test suite and is wiped
-# and recreated between test runs. Don't rely on the data there!
-
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -51,6 +46,17 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
 
-  config.hosts << "www.example.com"
-  config.hosts.clear
+  # テスト環境でのホスト制限を解除
+  config.hosts = nil
+
+  # テスト実行時のログを詳細に出力
+  config.log_level = :debug
+  logger_stdout = Logger.new(STDOUT)
+  logger_file = Logger.new(Rails.root.join('log/test.log'))
+  logger_stdout.formatter = proc do |severity, datetime, progname, msg|
+    "#{datetime.strftime('%Y-%m-%d %H:%M:%S')} #{severity}: #{msg}\n"
+  end
+  logger_file.formatter = logger_stdout.formatter
+  # logger_stdout.extend(ActiveSupport::Logger::Broadcast.new(logger_file))
+  config.logger = logger_stdout
 end

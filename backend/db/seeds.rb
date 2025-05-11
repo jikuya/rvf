@@ -42,4 +42,11 @@ company = Company.create!(
   end
 end
 
+Admin.create!(
+  email: 'admin@example.com',
+  name: '管理者',
+  password: 'password',
+  password_confirmation: 'password'
+)
+
 puts 'シードデータの作成が完了しました。'

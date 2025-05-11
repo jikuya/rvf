@@ -4,6 +4,11 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
+
+# ロガーをSTDOUTのみに出力
+Rails.logger = Logger.new(STDOUT)
+Rails.logger.level = Logger::DEBUG
+
 # Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
@@ -73,4 +78,21 @@ RSpec.configure do |config|
 
   # FactoryBotのシンタックスメソッドを有効化
   config.include FactoryBot::Syntax::Methods
+
+  # リクエストスペックのログを詳細に出力
+  config.before(:each, type: :request) do
+    Rails.logger.debug "=== Starting request spec ==="
+  end
+
+  config.after(:each, type: :request) do
+    Rails.logger.debug "=== Finished request spec ==="
+  end
+
+  # 共通のリクエストヘッダーを設定
+  config.before(:each, type: :request) do
+    @default_headers = {
+      'ACCEPT' => 'application/json',
+      'Host' => 'localhost'
+    }
+  end
 end

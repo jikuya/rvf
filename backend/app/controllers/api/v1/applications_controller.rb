@@ -5,7 +5,7 @@ module Api
       before_action :set_application, only: [:show, :update]
 
       def index
-        @applications = current_company.applications.includes(:job).all
+        @applications = current_company.job_applications.includes(:job).all
         render json: @applications.as_json(include: { 
           job: { only: [:id, :title] }
         }, methods: [:resume_url])
@@ -22,7 +22,7 @@ module Api
 
       def create
         @job = Job.find(params[:job_id])
-        @application = @job.applications.build(application_params)
+        @application = @job.job_applications.build(application_params.merge(company: current_company))
         
         if params[:resume].present?
           @application.resume.attach(params[:resume])
@@ -53,7 +53,7 @@ module Api
       private
 
       def set_application
-        @application = current_company.applications.find(params[:id])
+        @application = current_company.job_applications.find(params[:id])
       end
 
       def application_params
@@ -62,12 +62,30 @@ module Api
 
       def authenticate_company
         header = request.headers['Authorization']
-        token = header.split(' ').last if header
-        begin
-          @decoded = JsonWebToken.decode(token)
-          @current_company = Company.find(@decoded[:company_id])
-        rescue ActiveRecord::RecordNotFound, JWT::DecodeError
+        if header.nil?
           render json: { error: '認証が必要です' }, status: :unauthorized
+          return
+        end
+
+        begin
+          token = header.split(' ').last
+          @decoded = JsonWebToken.decode(token)
+          if @decoded.nil?
+            render json: { error: 'トークンの検証に失敗しました' }, status: :unauthorized
+            return
+          end
+
+          company_id = @decoded[:company_id]
+          if company_id.nil?
+            render json: { error: 'トークンに企業IDが含まれていません' }, status: :unauthorized
+            return
+          end
+
+          @current_company = Company.find(company_id)
+        rescue JWT::DecodeError => e
+          render json: { error: "トークンのデコードに失敗しました: #{e.message}" }, status: :unauthorized
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: '企業が見つかりません' }, status: :unauthorized
         end
       end
 

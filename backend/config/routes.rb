@@ -12,8 +12,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      get "test/ping"
       post '/login', to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
+      post 'test/ping', to: 'test#ping'
 
       resources :companies, only: [:create]
       resources :jobs, only: [:index, :create] do
