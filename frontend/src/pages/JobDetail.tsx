@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axios';
 import {
   Container,
   Typography,
@@ -37,7 +37,7 @@ const JobDetail: React.FC = () => {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const response = await axios.get<Job>(`/jobs/${jobId}`);
+        const response = await api.get<Job>(`/jobs/${jobId}`);
         setJob(response.data);
       } catch (err) {
         setError('求人情報の取得に失敗しました');
@@ -75,102 +75,100 @@ const JobDetail: React.FC = () => {
 
   return (
     <Container>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" component="h1">
-          求人詳細
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant="outlined" onClick={() => navigate('/jobs')}>
-            一覧に戻る
-          </Button>
-          <Button variant="contained" onClick={() => navigate(`/jobs/${jobId}/edit`)}>
-            編集
-          </Button>
+      <Paper sx={{ p: 4, mt: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Typography variant="h4" component="h1">
+            {job.title}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate(`/jobs/${jobId}/edit`)}
+            >
+              編集
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => navigate(`/jobs/${jobId}/apply`)}
+            >
+              応募する
+            </Button>
+          </Box>
         </Box>
-      </Box>
 
-      <Paper sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Box>
-            <Typography variant="h5" gutterBottom>
-              {job.title}
+            <Typography variant="subtitle1" color="text.secondary">
+              勤務地
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              <Chip
-                label={job.employment_type === 'full_time' ? '正社員' : '契約社員'}
-                color="primary"
-                size="small"
-              />
-              <Chip
-                label={job.status === 'active' ? '募集中' : '募集終了'}
-                color={job.status === 'active' ? 'success' : 'default'}
-                size="small"
-              />
-            </Box>
+            <Typography variant="body1">{job.location}</Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              給与
+            </Typography>
+            <Typography variant="body1">{job.salary}</Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              雇用形態
+            </Typography>
+            <Typography variant="body1">
+              {job.employment_type === 'full_time' && '正社員'}
+              {job.employment_type === 'part_time' && 'パートタイム'}
+              {job.employment_type === 'contract' && '契約社員'}
+              {job.employment_type === 'intern' && 'インターン'}
+            </Typography>
           </Box>
 
           <Divider />
 
           <Box>
-            <Typography variant="h6" gutterBottom>
-              基本情報
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  勤務地
-                </Typography>
-                <Typography variant="body1">{job.location}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  給与
-                </Typography>
-                <Typography variant="body1">{job.salary}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  作成日
-                </Typography>
-                <Typography variant="body1">
-                  {format(new Date(job.created_at), 'yyyy年MM月dd日')}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  更新日
-                </Typography>
-                <Typography variant="body1">
-                  {format(new Date(job.updated_at), 'yyyy年MM月dd日')}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-
-          <Divider />
-
-          <Box>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="subtitle1" color="text.secondary">
               仕事内容
             </Typography>
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>
-                {job.description}
-              </Typography>
-            </Paper>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+              {job.description}
+            </Typography>
           </Box>
 
-          <Divider />
-
           <Box>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="subtitle1" color="text.secondary">
               応募要件
             </Typography>
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>
-                {job.requirements}
-              </Typography>
-            </Paper>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+              {job.requirements}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              ステータス
+            </Typography>
+            <Chip
+              label={job.status === 'active' ? '募集中' : '募集終了'}
+              color={job.status === 'active' ? 'success' : 'default'}
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              作成日時
+            </Typography>
+            <Typography variant="body1">
+              {format(new Date(job.created_at), 'yyyy年MM月dd日 HH:mm')}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              更新日時
+            </Typography>
+            <Typography variant="body1">
+              {format(new Date(job.updated_at), 'yyyy年MM月dd日 HH:mm')}
+            </Typography>
           </Box>
         </Box>
       </Paper>

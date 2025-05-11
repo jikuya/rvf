@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axios';
 import {
   Container,
   Typography,
@@ -46,7 +46,7 @@ const JobForm: React.FC = () => {
     if (jobId) {
       const fetchJob = async () => {
         try {
-          const response = await axios.get<Job>(`/jobs/${jobId}`);
+          const response = await api.get<Job>(`/jobs/${jobId}`);
           setJob(response.data);
         } catch (err) {
           setError('求人情報の取得に失敗しました');
@@ -63,9 +63,9 @@ const JobForm: React.FC = () => {
 
     try {
       if (jobId) {
-        await axios.patch(`/jobs/${jobId}`, job);
+        await api.patch(`/jobs/${jobId}`, job);
       } else {
-        await axios.post('/jobs', job);
+        await api.post('/jobs', job);
       }
       navigate('/jobs');
     } catch (err) {
@@ -89,15 +89,15 @@ const JobForm: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4" component="h1" gutterBottom>
-        {jobId ? '求人情報の編集' : '新規求人の作成'}
-      </Typography>
+      <Paper sx={{ p: 4, mt: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          {jobId ? '求人情報編集' : '新規求人作成'}
+        </Typography>
 
-      <Paper sx={{ p: 3 }}>
         <form onSubmit={handleSubmit}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
-              label="タイトル"
+              label="求人タイトル"
               name="title"
               value={job.title}
               onChange={handleChange}
@@ -132,20 +132,9 @@ const JobForm: React.FC = () => {
                 label="雇用形態"
               >
                 <MenuItem value="full_time">正社員</MenuItem>
+                <MenuItem value="part_time">パートタイム</MenuItem>
                 <MenuItem value="contract">契約社員</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel>ステータス</InputLabel>
-              <Select
-                name="status"
-                value={job.status}
-                onChange={handleSelectChange}
-                label="ステータス"
-              >
-                <MenuItem value="active">募集中</MenuItem>
-                <MenuItem value="inactive">募集終了</MenuItem>
+                <MenuItem value="intern">インターン</MenuItem>
               </Select>
             </FormControl>
 
