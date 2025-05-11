@@ -21,8 +21,8 @@ company = Company.create!(
   job = company.jobs.create!(
     title: "テスト求人#{i + 1}",
     description: "テスト求人#{i + 1}の説明文です。\n\n【業務内容】\n・テスト業務\n・テスト開発\n\n【必須スキル】\n・テストスキル\n・テスト経験",
-    location: ['東京都', '大阪府', '福岡県'].sample,
-    salary: ['300,000円〜500,000円', '400,000円〜600,000円', '500,000円〜700,000円'].sample
+    location: [ '東京都', '大阪府', '福岡県' ].sample,
+    salary: [ '300,000円〜500,000円', '400,000円〜600,000円', '500,000円〜700,000円' ].sample
   )
 
   # テスト用応募
@@ -30,7 +30,7 @@ company = Company.create!(
     application = job.job_applications.create!(
       name: "応募者#{i * 3 + j + 1}",
       email: "applicant#{i * 3 + j + 1}@example.com",
-      status: ['pending', 'reviewing', 'accepted', 'rejected'].sample
+      status: [ 'pending', 'reviewing', 'accepted', 'rejected' ].sample
     )
 
     # テスト用履歴書

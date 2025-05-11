@@ -52,7 +52,7 @@ Rails.application.configure do
   # テスト実行時のログを詳細に出力
   config.log_level = :debug
   logger_stdout = Logger.new(STDOUT)
-  logger_file = Logger.new(Rails.root.join('log/test.log'))
+  logger_file = Logger.new(Rails.root.join("log/test.log"))
   logger_stdout.formatter = proc do |severity, datetime, progname, msg|
     "#{datetime.strftime('%Y-%m-%d %H:%M:%S')} #{severity}: #{msg}\n"
   end

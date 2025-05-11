@@ -13,20 +13,20 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "test/ping"
-      post '/login', to: 'sessions#create'
-      delete '/logout', to: 'sessions#destroy'
-      post 'test/ping', to: 'test#ping'
-      get '/me', to: 'sessions#me'
+      post "/login", to: "sessions#create"
+      delete "/logout", to: "sessions#destroy"
+      post "test/ping", to: "test#ping"
+      get "/me", to: "sessions#me"
 
-      resources :companies, only: [:create]
-      resources :jobs, only: [:index, :create] do
-        resources :applications, only: [:create]
+      resources :companies, only: [ :create ]
+      resources :jobs, only: [ :index, :create ] do
+        resources :applications, only: [ :create ]
       end
-      resources :applications, only: [:index, :update, :show]
+      resources :applications, only: [ :index, :update, :show ]
     end
   end
 
   resources :jobs do
-    resources :job_applications, only: [:create]
+    resources :job_applications, only: [ :create ]
   end
 end

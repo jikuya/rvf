@@ -83,16 +83,16 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # Configure email delivery using Mailgun
-  config.action_mailer.default_url_options = { host: 'rvf-f1cc04378d39.herokuapp.com' }
+  config.action_mailer.default_url_options = { host: "rvf-f1cc04378d39.herokuapp.com" }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.default_options = { from: 'noreply@rvf-f1cc04378d39.herokuapp.com' }
+  config.action_mailer.default_options = { from: "noreply@rvf-f1cc04378d39.herokuapp.com" }
   config.action_mailer.smtp_settings = {
-    address: ENV['MAILGUN_SMTP_SERVER'],
-    port: ENV['MAILGUN_SMTP_PORT'],
-    domain: ENV['MAILGUN_DOMAIN'],
-    user_name: ENV['MAILGUN_SMTP_LOGIN'],
-    password: ENV['MAILGUN_SMTP_PASSWORD'],
+    address: ENV["MAILGUN_SMTP_SERVER"],
+    port: ENV["MAILGUN_SMTP_PORT"],
+    domain: ENV["MAILGUN_DOMAIN"],
+    user_name: ENV["MAILGUN_SMTP_LOGIN"],
+    password: ENV["MAILGUN_SMTP_PASSWORD"],
     authentication: :plain,
     enable_starttls_auto: true
   }

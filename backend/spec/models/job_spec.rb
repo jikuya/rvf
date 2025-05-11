@@ -46,4 +46,4 @@ RSpec.describe Job, type: :model do
       expect(Job.reflect_on_association(:job_applications).macro).to eq :has_many
     end
   end
-end 
+end

@@ -6,4 +6,4 @@ FactoryBot.define do
     salary { "300,000円〜500,000円" }
     association :company
   end
-end 
+end

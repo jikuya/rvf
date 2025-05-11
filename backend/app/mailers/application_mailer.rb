@@ -1,6 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'noreply@rvf.com'
-  layout 'mailer'
+  default from: "noreply@rvf.com"
+  layout "mailer"
 
   def new_application_notification(application)
     @application = application

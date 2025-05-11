@@ -4,13 +4,13 @@ module Api
       # skip_before_action :verify_authenticity_token
 
       def current_admin
-        header = request.headers['Authorization']
+        header = request.headers["Authorization"]
         return nil unless header.present?
-        token = header.split(' ').last
+        token = header.split(" ").last
         decoded = JsonWebToken.decode(token)
-        return nil unless decoded && decoded['admin_id']
-        Admin.find_by(id: decoded['admin_id'])
+        return nil unless decoded && decoded["admin_id"]
+        Admin.find_by(id: decoded["admin_id"])
       end
     end
   end
-end 
+end

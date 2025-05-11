@@ -2,9 +2,9 @@ module JsonWebToken
   puts "Rails.env: #{Rails.env}"
   puts "Rails.env.test?: #{Rails.env.test?}"
   SECRET_KEY = if Rails.env.test?
-    'test_secret_key_base_for_jwt_token_verification'
+    "test_secret_key_base_for_jwt_token_verification"
   else
-    ENV['SECRET_KEY_BASE'] || Rails.application.credentials.secret_key_base
+    ENV["SECRET_KEY_BASE"] || Rails.application.credentials.secret_key_base
   end
   puts "SECRET_KEY: #{SECRET_KEY}"
 
@@ -25,4 +25,4 @@ module JsonWebToken
       nil
     end
   end
-end 
+end

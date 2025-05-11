@@ -37,4 +37,4 @@ RSpec.describe Company, type: :model do
       expect(company.errors[:password]).to include("can't be blank")
     end
   end
-end 
+end

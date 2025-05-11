@@ -16,5 +16,4 @@ RSpec.describe "Api::V1::Tests", type: :request do
       expect(json['message']).to eq('pong')
     end
   end
-
 end
