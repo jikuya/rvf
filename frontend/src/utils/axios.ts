@@ -25,11 +25,7 @@ if (process.env.NODE_ENV !== 'test') {
   );
 
   axiosInstance.interceptors.response.use(
-    (response: AxiosResponse) => {
-      const data = response.data as { admin: Admin };
-      setAdmin(data.admin);
-      return response;
-    },
+    (response: AxiosResponse) => response,
     (error: AxiosError) => {
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
