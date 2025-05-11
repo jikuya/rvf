@@ -1,11 +1,11 @@
 module Api
   module V1
     class ApplicationsController < BaseController
-      before_action :authenticate_company
+      before_action :authenticate_admin
       before_action :set_application, only: [ :show, :update ]
 
       def index
-        @applications = current_company.job_applications.includes(:job).all
+        @applications = JobApplication.includes(:job).all
         render json: @applications.as_json(include: {
           job: { only: [ :id, :title ] }
         }, methods: [ :resume_url ])
@@ -53,14 +53,14 @@ module Api
       private
 
       def set_application
-        @application = current_company.job_applications.find(params[:id])
+        @application = JobApplication.find(params[:id])
       end
 
       def application_params
         params.permit(:name, :email, :phone, :cover_letter, :status)
       end
 
-      def authenticate_company
+      def authenticate_admin
         header = request.headers["Authorization"]
         if header.nil?
           render json: { error: "認証が必要です" }, status: :unauthorized
