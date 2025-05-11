@@ -88,7 +88,7 @@ const JobApplicationDetail: React.FC = () => {
 
       <Paper sx={{ p: 3 }}>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid component="div" item xs={12}>
             <Typography variant="h6" gutterBottom>
               求人情報
             </Typography>
@@ -97,24 +97,24 @@ const JobApplicationDetail: React.FC = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid component="div" item xs={12}>
             <Typography variant="h6" gutterBottom>
               応募者情報
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid component="div" item xs={12} sm={6}>
                 <Typography variant="subtitle2">お名前</Typography>
                 <Typography variant="body1">{application.name}</Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid component="div" item xs={12} sm={6}>
                 <Typography variant="subtitle2">メールアドレス</Typography>
                 <Typography variant="body1">{application.email}</Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid component="div" item xs={12} sm={6}>
                 <Typography variant="subtitle2">電話番号</Typography>
                 <Typography variant="body1">{application.phone}</Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid component="div" item xs={12} sm={6}>
                 <Typography variant="subtitle2">応募日</Typography>
                 <Typography variant="body1">
                   {format(new Date(application.created_at), 'yyyy年MM月dd日')}
@@ -123,7 +123,7 @@ const JobApplicationDetail: React.FC = () => {
             </Grid>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid component="div" item xs={12}>
             <Typography variant="h6" gutterBottom>
               カバーレター
             </Typography>
@@ -132,7 +132,7 @@ const JobApplicationDetail: React.FC = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid component="div" item xs={12}>
             <Typography variant="h6" gutterBottom>
               ステータス
             </Typography>

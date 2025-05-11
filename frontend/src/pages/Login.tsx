@@ -1,37 +1,36 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import axios from '../utils/axios';
+import axios from 'axios';
 import {
   Container,
-  Box,
   Typography,
+  Paper,
+  Box,
   TextField,
   Button,
-  Alert,
   CircularProgress,
-  Paper,
+  Alert,
 } from '@mui/material';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
+    setError(null);
 
     try {
-      const response = await axios.post<{ token: string }>('/login', { email, password });
-      login(response.data.token);
-      navigate('/applications');
+      await login(email, password);
+      navigate('/jobs');
     } catch (err) {
-      setError('メールアドレスまたはパスワードが正しくありません');
+      setError('ログインに失敗しました');
     } finally {
       setLoading(false);
     }
@@ -39,78 +38,47 @@ const Login: React.FC = () => {
 
   return (
     <Container maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography component="h1" variant="h4" gutterBottom>
-            求人管理システム
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-            企業アカウントでログインしてください
-          </Typography>
+      <Box sx={{ mt: 8, mb: 4 }}>
+        <Typography variant="h4" component="h1" align="center" gutterBottom>
+          ログイン
+        </Typography>
+      </Box>
 
-          {error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+      <Paper sx={{ p: 4 }}>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
               label="メールアドレス"
-              name="email"
-              autoComplete="email"
-              autoFocus
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              margin="normal"
               required
               fullWidth
-              name="password"
+            />
+
+            <TextField
               label="パスワード"
               type="password"
-              id="password"
-              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              fullWidth
             />
+
+            {error && <Alert severity="error">{error}</Alert>}
+
             <Button
               type="submit"
-              fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              size="large"
               disabled={loading}
+              fullWidth
             >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'ログイン'
-              )}
+              {loading ? <CircularProgress size={24} /> : 'ログイン'}
             </Button>
           </Box>
-        </Paper>
-      </Box>
+        </form>
+      </Paper>
     </Container>
   );
 };
