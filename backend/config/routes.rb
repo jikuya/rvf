@@ -8,8 +8,14 @@ Rails.application.routes.draw do
       delete "/logout", to: "sessions#destroy"
       get "/me", to: "sessions#me"
 
-      resources :companies, only: [ :index, :create, :show, :update ]
-      resources :jobs, only: [ :index, :create, :show, :update ]
+      resources :companies, only: [ :index, :create, :show, :update ] do
+        resources :jobs, only: [ :index ]
+      end
+      resources :jobs, only: [ :index, :create, :show, :update ] do
+        member do
+          patch :update_form_definition
+        end
+      end
       resources :job_applications, only: [ :index, :create, :show, :update ]
     end
   end

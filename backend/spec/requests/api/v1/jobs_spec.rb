@@ -13,7 +13,8 @@ RSpec.describe 'Jobs API', type: :request do
       salary: '400万〜600万',
       location: '東京',
       employment_type: 'full_time',
-      company_id: company.id
+      company_id: company.id,
+      form_definition: [ { id: 'name', type: 'text', label: '氏名', name: 'name', required: true } ]
     }
   end
 

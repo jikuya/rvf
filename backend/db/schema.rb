@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_11_113224) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_11_122036) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -85,6 +85,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_113224) do
     t.datetime "updated_at", null: false
     t.string "status", default: "pending", null: false
     t.bigint "company_id", null: false
+    t.json "form_schema"
     t.index ["company_id"], name: "index_job_applications_on_company_id"
     t.index ["job_id"], name: "index_job_applications_on_job_id"
   end
@@ -100,6 +101,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_113224) do
     t.text "requirements"
     t.string "salary_range"
     t.string "employment_type"
+    t.json "form_definition"
     t.index ["company_id"], name: "index_jobs_on_company_id"
     t.index ["title"], name: "index_jobs_on_title"
   end

@@ -35,6 +35,43 @@ RSpec.describe Job, type: :model do
       expect(job).not_to be_valid
       expect(job.errors[:company]).to include("must exist")
     end
+
+    describe 'form_definitionのバリデーション' do
+      it 'form_definitionが必須であること' do
+        job = build(:job, form_definition: nil)
+        expect(job).not_to be_valid
+        expect(job.errors[:form_definition]).to include("can't be blank")
+      end
+
+      it 'form_definitionが配列であること' do
+        job = build(:job, form_definition: { id: 'name', type: 'text', label: '氏名' })
+        expect(job).not_to be_valid
+        expect(job.errors[:form_definition]).to include("must be an array")
+      end
+
+      it 'form_definitionの各フィールドがハッシュであること' do
+        job = build(:job, form_definition: ['invalid'])
+        expect(job).not_to be_valid
+        expect(job.errors[:form_definition]).to include("field at index 0 must be a hash")
+      end
+
+      it 'form_definitionの各フィールドに必須キーが含まれていること' do
+        job = build(:job, form_definition: [{ type: 'text', label: '氏名' }])
+        expect(job).not_to be_valid
+        expect(job.errors[:form_definition]).to include("field at index 0 is missing required keys: id")
+      end
+
+      it 'form_definitionの各フィールドの型が有効であること' do
+        job = build(:job, form_definition: [{ id: 'name', type: 'invalid', label: '氏名' }])
+        expect(job).not_to be_valid
+        expect(job.errors[:form_definition]).to include("field at index 0 has invalid type: invalid")
+      end
+
+      it 'シンボルキーでも有効なform_definitionを受け入れること' do
+        job = build(:job, form_definition: [{ id: 'name', type: :text, label: '氏名' }])
+        expect(job).to be_valid
+      end
+    end
   end
 
   describe 'アソシエーション' do
