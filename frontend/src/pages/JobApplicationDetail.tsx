@@ -9,7 +9,6 @@ import {
   Button,
   CircularProgress,
   Alert,
-  Grid,
   Chip,
 } from '@mui/material';
 import { format } from 'date-fns';
@@ -87,52 +86,52 @@ const JobApplicationDetail: React.FC = () => {
       </Box>
 
       <Paper sx={{ p: 3 }}>
-        <Grid container spacing={3}>
-          <Grid component="div" item xs={12}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box>
             <Typography variant="h6" gutterBottom>
               求人情報
             </Typography>
             <Typography variant="body1" gutterBottom>
               {application.job.title}
             </Typography>
-          </Grid>
+          </Box>
 
-          <Grid component="div" item xs={12}>
+          <Box>
             <Typography variant="h6" gutterBottom>
               応募者情報
             </Typography>
-            <Grid container spacing={2}>
-              <Grid component="div" item xs={12} sm={6}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+              <Box>
                 <Typography variant="subtitle2">お名前</Typography>
                 <Typography variant="body1">{application.name}</Typography>
-              </Grid>
-              <Grid component="div" item xs={12} sm={6}>
+              </Box>
+              <Box>
                 <Typography variant="subtitle2">メールアドレス</Typography>
                 <Typography variant="body1">{application.email}</Typography>
-              </Grid>
-              <Grid component="div" item xs={12} sm={6}>
+              </Box>
+              <Box>
                 <Typography variant="subtitle2">電話番号</Typography>
                 <Typography variant="body1">{application.phone}</Typography>
-              </Grid>
-              <Grid component="div" item xs={12} sm={6}>
+              </Box>
+              <Box>
                 <Typography variant="subtitle2">応募日</Typography>
                 <Typography variant="body1">
                   {format(new Date(application.created_at), 'yyyy年MM月dd日')}
                 </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
+              </Box>
+            </Box>
+          </Box>
 
-          <Grid component="div" item xs={12}>
+          <Box>
             <Typography variant="h6" gutterBottom>
               カバーレター
             </Typography>
             <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
               {application.cover_letter}
             </Typography>
-          </Grid>
+          </Box>
 
-          <Grid component="div" item xs={12}>
+          <Box>
             <Typography variant="h6" gutterBottom>
               ステータス
             </Typography>
@@ -156,8 +155,8 @@ const JobApplicationDetail: React.FC = () => {
                 clickable
               />
             </Box>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Paper>
     </Container>
   );
