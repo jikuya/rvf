@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 // JobDetailのモック
@@ -29,6 +29,8 @@ describe('JobDetail', () => {
       </MemoryRouter>
     );
     fireEvent.click(screen.getByText('編集'));
-    expect(assignMock).toHaveBeenCalledWith('/jobs/1/edit');
+    await waitFor(() => {
+      expect(assignMock).toHaveBeenCalledWith('/jobs/1/edit');
+    });
   });
 }); 
