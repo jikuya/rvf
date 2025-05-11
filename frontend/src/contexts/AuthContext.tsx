@@ -5,6 +5,9 @@ interface Admin {
   id: number;
   email: string;
   name: string;
+  password_digest: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface LoginResponse {
