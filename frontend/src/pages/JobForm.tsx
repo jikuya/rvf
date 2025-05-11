@@ -25,6 +25,14 @@ interface Job {
   salary: string;
   employment_type: string;
   status: string;
+  form_definition: Array<{
+    id: string;
+    type: string;
+    label: string;
+    name: string;
+    required: boolean;
+    options?: string[];
+  }>;
 }
 
 const JobForm: React.FC = () => {
@@ -37,6 +45,36 @@ const JobForm: React.FC = () => {
     salary: '',
     employment_type: 'full_time',
     status: 'active',
+    form_definition: [
+      {
+        id: 'name',
+        type: 'text',
+        label: '氏名',
+        name: 'name',
+        required: true
+      },
+      {
+        id: 'email',
+        type: 'email',
+        label: 'メールアドレス',
+        name: 'email',
+        required: true
+      },
+      {
+        id: 'phone',
+        type: 'tel',
+        label: '電話番号',
+        name: 'phone',
+        required: true
+      },
+      {
+        id: 'cover_letter',
+        type: 'textarea',
+        label: '志望動機',
+        name: 'cover_letter',
+        required: true
+      }
+    ]
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
