@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 // @ts-ignore
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
