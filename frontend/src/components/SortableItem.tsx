@@ -1,5 +1,13 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {
+  Paper,
+  Box,
+  Typography,
+  IconButton,
+  Chip,
+} from '@mui/material';
+import { DragHandle as DragHandleIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import type { FormField } from '../types/form';
 
 interface SortableItemProps {
@@ -8,7 +16,7 @@ interface SortableItemProps {
   onDelete: () => void;
 }
 
-export const SortableItem: React.FC<SortableItemProps> = ({ field, onEdit, onDelete }) => {
+const SortableItem: React.FC<SortableItemProps> = ({ field, onEdit, onDelete }) => {
   const {
     attributes,
     listeners,
@@ -23,37 +31,45 @@ export const SortableItem: React.FC<SortableItemProps> = ({ field, onEdit, onDel
   };
 
   return (
-    <div
+    <Paper
       ref={setNodeRef}
       style={style}
-      className="bg-white p-4 rounded-lg shadow mb-2 flex items-center justify-between"
-      {...attributes}
-      {...listeners}
+      sx={{
+        p: 2,
+        mb: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
     >
-      <div className="flex-1">
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-500 cursor-move">⋮⋮</span>
-          <span className="font-medium">{field.label}</span>
-          <span className="text-sm text-gray-500">({field.type})</span>
-          {field.required && (
-            <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">必須</span>
-          )}
-        </div>
-      </div>
-      <div className="flex space-x-2">
-        <button
-          onClick={onEdit}
-          className="text-blue-500 hover:text-blue-700"
-        >
-          編集
-        </button>
-        <button
-          onClick={onDelete}
-          className="text-red-500 hover:text-red-700"
-        >
-          削除
-        </button>
-      </div>
-    </div>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <IconButton {...attributes} {...listeners} size="small">
+          <DragHandleIcon />
+        </IconButton>
+        <Typography variant="body1">{field.label}</Typography>
+        <Typography variant="caption" color="text.secondary">
+          ({field.type})
+        </Typography>
+        {field.required && (
+          <Chip
+            label="必須"
+            size="small"
+            color="error"
+            variant="outlined"
+          />
+        )}
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <IconButton onClick={onEdit} size="small">
+          <EditIcon />
+        </IconButton>
+        <IconButton onClick={onDelete} size="small" color="error">
+          <DeleteIcon />
+        </IconButton>
+      </Box>
+    </Paper>
   );
-}; 
+};
+
+export default SortableItem; 

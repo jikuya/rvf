@@ -2,11 +2,17 @@ import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 // @ts-ignore
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
-import { JobEdit } from '../JobEdit';
+import JobEdit from '../JobEdit';
 import type { FormField } from '../../types/form';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+  useParams: () => ({ jobId: '1' }),
+}));
 
 const mockJob = {
   id: 1,
@@ -74,5 +80,51 @@ describe('JobEdit', () => {
     await waitFor(() => expect(screen.getByText('テスト求人 のフォーム定義編集')).toBeInTheDocument());
     fireEvent.click(screen.getByText('フォームを保存'));
     await waitFor(() => expect(screen.getByText('フォーム定義の保存に失敗しました')).toBeInTheDocument());
+  });
+
+  it('renders job edit form correctly', async () => {
+    mockedAxios.get.mockResolvedValueOnce({ data: mockJob, status: 200, statusText: 'OK', headers: {}, config: { url: '/api/v1/jobs/1' } });
+
+    render(
+      <MemoryRouter>
+        <JobEdit />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('タイトル')).toBeInTheDocument();
+      expect(screen.getByLabelText('会社名')).toBeInTheDocument();
+      expect(screen.getByLabelText('勤務地')).toBeInTheDocument();
+      expect(screen.getByLabelText('仕事内容')).toBeInTheDocument();
+      expect(screen.getByLabelText('給与')).toBeInTheDocument();
+      expect(screen.getByLabelText('応募要件')).toBeInTheDocument();
+    });
+  });
+
+  it('shows error message when fetch fails', async () => {
+    mockedAxios.get.mockRejectedValueOnce(new Error('求人情報の取得に失敗しました'));
+
+    render(
+      <MemoryRouter>
+        <JobEdit />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('求人情報の取得に失敗しました')).toBeInTheDocument();
+    });
+  });
+
+  it('shows loading state', () => {
+    // @ts-ignore
+    mockedAxios.get.mockImplementation(() => new Promise(() => {}));
+
+    render(
+      <MemoryRouter>
+        <JobEdit />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('読み込み中...')).toBeInTheDocument();
   });
 }); 

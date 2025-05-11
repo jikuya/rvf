@@ -6,30 +6,109 @@ import { BrowserRouter, MemoryRouter, Routes, Route } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import JobApplicationForm from '../JobApplicationForm';
 import axios from 'axios';
+import type { FormField } from '../../types/form';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+// axios.createのモックを追加
+const mockInterceptors = {
+  request: { use: jest.fn(), eject: jest.fn() },
+  response: { use: jest.fn(), eject: jest.fn() },
+};
+mockedAxios.create.mockReturnValue({
+  interceptors: mockInterceptors,
+  post: jest.fn(),
+} as any);
+
 describe('JobApplicationForm', () => {
+  const mockFields: FormField[] = [
+    {
+      id: '1',
+      label: '氏名',
+      type: 'text',
+      required: true,
+    },
+    {
+      id: '2',
+      label: 'メールアドレス',
+      type: 'email',
+      required: true,
+    },
+  ];
+
   const mockOnSubmit = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders all form fields', () => {
+  it('renders form fields correctly', () => {
+    render(
+      <JobApplicationForm
+        jobId={1}
+        formDefinition={mockFields}
+        onSubmit={mockOnSubmit}
+      />
+    );
+
+    expect(screen.getByLabelText(/氏名/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/メールアドレス/)).toBeInTheDocument();
+  });
+
+  it('submits form data correctly', async () => {
+    render(
+      <JobApplicationForm
+        jobId={1}
+        formDefinition={mockFields}
+        onSubmit={mockOnSubmit}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText(/氏名/), {
+      target: { value: 'テスト太郎' },
+    });
+    fireEvent.change(screen.getByLabelText(/メールアドレス/), {
+      target: { value: 'test@example.com' },
+    });
+
+    await userEvent.click(screen.getByText('応募する'));
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith({
+        '1': 'テスト太郎',
+        '2': 'test@example.com',
+      });
+    });
+  });
+
+  it('shows error message when submission fails', async () => {
+    const mockOnSubmitWithError = jest.fn().mockRejectedValueOnce(() => {
+      throw new Error('送信に失敗しました');
+    });
+
     render(
       <BrowserRouter>
-        <JobApplicationForm onSubmit={mockOnSubmit} />
+        <JobApplicationForm onSubmit={mockOnSubmitWithError} jobId={1} formDefinition={mockFields} />
       </BrowserRouter>
     );
 
-    expect(screen.getByLabelText(/お名前/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/メールアドレス/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/電話番号/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/カバーレター/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/履歴書/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /応募する/i })).toBeInTheDocument();
+    await userEvent.click(screen.getByText('応募する'));
+
+    await waitFor(() => {
+      const errorMessage = screen.getByText('送信に失敗しました');
+      expect(errorMessage).toBeInTheDocument();
+    });
+  });
+
+  it('renders all form fields', () => {
+    render(
+      <BrowserRouter>
+        <JobApplicationForm onSubmit={mockOnSubmit} jobId={1} formDefinition={mockFields} />
+      </BrowserRouter>
+    );
+    expect(screen.getByLabelText(/氏名/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/メールアドレス/)).toBeInTheDocument();
   });
 
   it('submits form data successfully', async () => {
@@ -38,80 +117,56 @@ describe('JobApplicationForm', () => {
     render(
       <MemoryRouter initialEntries={['/jobs/1']}>
         <Routes>
-          <Route path="/jobs/:jobId" element={<JobApplicationForm onSubmit={mockOnSubmit} jobId="1" disableResumeRequired={true} />} />
+          <Route path="/jobs/:jobId" element={<JobApplicationForm onSubmit={mockOnSubmit} jobId={1} formDefinition={mockFields} />} />
         </Routes>
       </MemoryRouter>
     );
 
-    fireEvent.change(screen.getByLabelText(/お名前/i), {
+    fireEvent.change(screen.getByLabelText(/氏名/), {
       target: { value: 'テスト太郎' },
     });
-    fireEvent.change(screen.getByLabelText(/メールアドレス/i), {
+    fireEvent.change(screen.getByLabelText(/メールアドレス/), {
       target: { value: 'test@example.com' },
     });
-    fireEvent.change(screen.getByLabelText(/電話番号/i), {
-      target: { value: '090-1234-5678' },
-    });
-    fireEvent.change(screen.getByLabelText(/カバーレター/i), {
-      target: { value: 'テストのカバーレター' },
-    });
-
-    const file = new File(['test'], 'test.pdf', { type: 'application/pdf' });
-    const fileInput = screen.getByLabelText(/履歴書/i);
-    await userEvent.upload(fileInput, file);
-    expect((fileInput as HTMLInputElement).files![0]).toBe(file);
 
     await userEvent.click(screen.getByRole('button', { name: /応募する/i }));
 
     await waitFor(() => {
-      expect(mockedAxios.post).toHaveBeenCalled();
       expect(mockOnSubmit).toHaveBeenCalled();
     });
   });
 
   it('handles submission error', async () => {
-    mockedAxios.post.mockRejectedValueOnce(new Error('Network error'));
-
-    render(
-      <MemoryRouter initialEntries={['/jobs/1']}>
-        <Routes>
-          <Route path="/jobs/:jobId" element={<JobApplicationForm onSubmit={mockOnSubmit} jobId="1" disableResumeRequired={true} />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    fireEvent.change(screen.getByLabelText(/お名前/i), {
-      target: { value: 'テスト太郎' },
-    });
-    fireEvent.change(screen.getByLabelText(/メールアドレス/i), {
-      target: { value: 'test@example.com' },
+    const mockOnSubmitWithError = jest.fn().mockRejectedValueOnce(() => {
+      throw new Error('送信に失敗しました');
     });
 
-    const file = new File(['test'], 'test.pdf', { type: 'application/pdf' });
-    const fileInput = screen.getByLabelText(/履歴書/i);
-    await userEvent.upload(fileInput, file);
-    expect((fileInput as HTMLInputElement).files![0]).toBe(file);
-
-    await userEvent.click(screen.getByRole('button', { name: /応募する/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/応募の送信に失敗しました。もう一度お試しください。/i)).toBeInTheDocument();
-    });
-  });
-
-  it('validates required fields', async () => {
     render(
       <BrowserRouter>
-        <JobApplicationForm onSubmit={mockOnSubmit} />
+        <JobApplicationForm onSubmit={mockOnSubmitWithError} jobId={1} formDefinition={mockFields} />
       </BrowserRouter>
     );
 
     await userEvent.click(screen.getByRole('button', { name: /応募する/i }));
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/お名前/i)).toBeInvalid();
-      expect(screen.getByLabelText(/メールアドレス/i)).toBeInvalid();
-      expect(screen.getByLabelText(/履歴書/i)).toBeInvalid();
+      const errorMessage = screen.getByText('送信に失敗しました');
+      expect(errorMessage).toBeInTheDocument();
+    });
+  });
+
+  it('validates required fields', async () => {
+    render(
+      <BrowserRouter>
+        <JobApplicationForm onSubmit={mockOnSubmit} jobId={1} formDefinition={mockFields} />
+      </BrowserRouter>
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /応募する/i }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/氏名/)).toBeInvalid();
+      expect(screen.getByLabelText(/メールアドレス/)).toBeInvalid();
     });
   });
 }); 

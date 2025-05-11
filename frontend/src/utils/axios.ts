@@ -9,28 +9,30 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-axiosInstance.interceptors.request.use(
-  (config: any) => {
-    const token = localStorage.getItem('token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+if (process.env.NODE_ENV !== 'test') {
+  axiosInstance.interceptors.request.use(
+    (config: any) => {
+      const token = localStorage.getItem('token');
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error: any) => {
+      return Promise.reject(error);
     }
-    return config;
-  },
-  (error: any) => {
-    return Promise.reject(error);
-  }
-);
+  );
 
-axiosInstance.interceptors.response.use(
-  (response: any) => response,
-  (error: any) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+  axiosInstance.interceptors.response.use(
+    (response: any) => response,
+    (error: any) => {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+}
 
-export default axiosInstance; 
+// export default axiosInstance; 

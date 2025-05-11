@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { FormBuilder } from '../components/FormBuilder';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Box,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
+import FormBuilder from '../components/FormBuilder';
 import type { FormField } from '../types/form';
 
 interface Job {
@@ -18,6 +25,7 @@ export const JobEdit: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -51,20 +59,25 @@ export const JobEdit: React.FC = () => {
     }
   };
 
-  if (loading) return <div>読み込み中...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
-  if (!job) return <div>ジョブが見つかりません</div>;
+  if (loading) return <CircularProgress />;
+  if (error) return <Alert severity="error">{error}</Alert>;
+  if (!job) return <CircularProgress />;
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">{job.title} のフォーム定義編集</h2>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Typography variant="h4" component="h2" gutterBottom>
+        {job.title} のフォーム定義編集
+      </Typography>
       <FormBuilder
-        initialFields={job.form_definition || []}
+        formDefinition={job.form_definition || []}
         onSave={handleSave}
+        onCancel={() => navigate(`/jobs/${id}`)}
       />
-      {saving && <div className="text-gray-500 mt-2">保存中...</div>}
-      {success && <div className="text-green-600 mt-2">保存しました！</div>}
-      {error && <div className="text-red-500 mt-2">{error}</div>}
-    </div>
+      {saving && <Alert severity="info" sx={{ mt: 2 }}>保存中...</Alert>}
+      {success && <Alert severity="success" sx={{ mt: 2 }}>保存しました！</Alert>}
+      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+    </Container>
   );
-}; 
+};
+
+export default JobEdit; 

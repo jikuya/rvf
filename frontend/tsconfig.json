@@ -5,7 +5,12 @@
     "types": [
       "jest",
       "@testing-library/jest-dom",
-      "node"
+      "node",
+      "@mui/material",
+      "@mui/icons-material",
+      "@dnd-kit/core",
+      "@dnd-kit/sortable",
+      "@dnd-kit/utilities"
     ],
     "lib": [
       "ES2020",

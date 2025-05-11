@@ -1,213 +1,207 @@
 import React, { useState } from 'react';
-// @ts-ignore
 import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-// @ts-ignore
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { SortableItem } from './SortableItem';
-import type { FormField, FormFieldType } from '../types/form';
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  IconButton,
+  Typography,
+  Paper,
+} from '@mui/material';
+import { DragHandle as DragHandleIcon, Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import type { FormField } from '../types/form';
+import SortableItem from './SortableItem';
 
 interface FormBuilderProps {
-  initialFields: FormField[];
+  formDefinition: FormField[];
   onSave: (fields: FormField[]) => void;
+  onCancel: () => void;
 }
 
-export const FormBuilder: React.FC<FormBuilderProps> = ({ initialFields, onSave }) => {
-  const [fields, setFields] = useState<FormField[]>(initialFields);
+const FormBuilder: React.FC<FormBuilderProps> = ({ formDefinition, onSave, onCancel }) => {
+  const [fields, setFields] = useState<FormField[]>(formDefinition);
   const [editingField, setEditingField] = useState<FormField | null>(null);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-
     if (active.id !== over.id) {
       setFields((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+        const newItems = [...items];
+        const [removed] = newItems.splice(oldIndex, 1);
+        newItems.splice(newIndex, 0, removed);
+        return newItems;
       });
     }
   };
 
-  const addField = () => {
+  const handleAddField = () => {
     const newField: FormField = {
       id: `field-${Date.now()}`,
+      label: '',
       type: 'text',
-      label: '新しい項目',
       required: false,
       options: [],
     };
-    setFields([...fields, newField]);
     setEditingField(newField);
+    setIsDialogOpen(true);
   };
 
-  const updateField = (updatedField: FormField) => {
-    setFields(fields.map((field) => (field.id === updatedField.id ? updatedField : field)));
+  const handleEditField = (field: FormField) => {
+    setEditingField(field);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteField = (fieldId: string) => {
+    setFields((items) => items.filter((item) => item.id !== fieldId));
+  };
+
+  const handleSaveField = () => {
+    if (editingField) {
+      setFields((items) => {
+        const index = items.findIndex((item) => item.id === editingField.id);
+        if (index === -1) {
+          return [...items, editingField];
+        }
+        const newItems = [...items];
+        newItems[index] = editingField;
+        return newItems;
+      });
+    }
+    setIsDialogOpen(false);
     setEditingField(null);
   };
 
-  const deleteField = (fieldId: string) => {
-    setFields(fields.filter((field) => field.id !== fieldId));
-  };
-
   return (
-    <div className="p-4">
-      <div className="mb-4">
-        <button
-          onClick={addField}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={handleAddField}
         >
           項目を追加
-        </button>
-      </div>
+        </Button>
+        <Box>
+          <Button variant="outlined" onClick={onCancel} sx={{ mr: 1 }}>
+            キャンセル
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => onSave(fields)}>
+            保存
+          </Button>
+        </Box>
+      </Box>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={fields} strategy={verticalListSortingStrategy}>
           {fields.map((field) => (
             <SortableItem
               key={field.id}
               field={field}
-              onEdit={() => setEditingField(field)}
-              onDelete={() => deleteField(field.id)}
+              onEdit={() => handleEditField(field)}
+              onDelete={() => handleDeleteField(field.id)}
             />
           ))}
         </SortableContext>
       </DndContext>
 
-      {editingField && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h3 className="text-lg font-bold mb-4">項目の編集</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">ラベル</label>
-                <input
-                  type="text"
-                  value={editingField.label}
-                  onChange={(e) =>
-                    setEditingField({ ...editingField, label: e.target.value })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">タイプ</label>
-                <select
-                  value={editingField.type}
-                  onChange={(e) =>
-                    setEditingField({ ...editingField, type: e.target.value as FormFieldType })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                >
-                  <option value="text">テキスト</option>
-                  <option value="email">メール</option>
-                  <option value="tel">電話番号</option>
-                  <option value="number">数値</option>
-                  <option value="file">ファイル</option>
-                  <option value="textarea">テキストエリア</option>
-                  <option value="select">セレクト</option>
-                  <option value="checkbox">チェックボックス</option>
-                  <option value="radio">ラジオボタン</option>
-                </select>
-              </div>
-              <div>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={editingField.required}
-                    onChange={(e) =>
-                      setEditingField({ ...editingField, required: e.target.checked })
-                    }
-                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">必須</span>
-                </label>
-              </div>
-              {(editingField.type === 'select' ||
-                editingField.type === 'checkbox' ||
-                editingField.type === 'radio') && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">選択肢</label>
-                  <div className="space-y-2">
-                    {editingField.options?.map((option, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <input
-                          type="text"
-                          value={option}
-                          onChange={(e) => {
-                            const newOptions = [...(editingField.options || [])];
-                            newOptions[index] = e.target.value;
-                            setEditingField({ ...editingField, options: newOptions });
-                          }}
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                        <button
-                          onClick={() => {
-                            const newOptions = editingField.options?.filter((_, i) => i !== index);
-                            setEditingField({ ...editingField, options: newOptions });
-                          }}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          削除
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      onClick={() => {
-                        const newOptions = [...(editingField.options || []), ''];
-                        setEditingField({ ...editingField, options: newOptions });
-                      }}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      選択肢を追加
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                onClick={() => setEditingField(null)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                キャンセル
-              </button>
-              <button
-                onClick={() => updateField(editingField)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-              >
-                保存
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>項目の編集</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <TextField
+              label="ラベル"
+              value={editingField?.label || ''}
+              onChange={(e) => setEditingField(prev => prev ? { ...prev, label: e.target.value } : null)}
+              fullWidth
+            />
 
-      <div className="mt-6">
-        <button
-          onClick={() => onSave(fields)}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          フォームを保存
-        </button>
-      </div>
-    </div>
+            <TextField
+              select
+              label="タイプ"
+              value={editingField?.type || 'text'}
+              onChange={(e) => setEditingField(prev => prev ? { ...prev, type: e.target.value } : null)}
+              fullWidth
+              SelectProps={{
+                native: true,
+              }}
+            >
+              <option value="text">テキスト</option>
+              <option value="textarea">テキストエリア</option>
+              <option value="email">メールアドレス</option>
+              <option value="select">セレクトボックス</option>
+            </TextField>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={editingField?.required || false}
+                  onChange={(e) => setEditingField(prev => prev ? { ...prev, required: e.target.checked } : null)}
+                />
+              }
+              label="必須"
+            />
+
+            {editingField?.type === 'select' && (
+              <Box>
+                <Typography variant="subtitle2" gutterBottom>
+                  選択肢
+                </Typography>
+                {editingField.options?.map((option, index) => (
+                  <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                    <TextField
+                      value={option}
+                      onChange={(e) => {
+                        const newOptions = [...(editingField.options || [])];
+                        newOptions[index] = e.target.value;
+                        setEditingField(prev => prev ? { ...prev, options: newOptions } : null);
+                      }}
+                      fullWidth
+                    />
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        const newOptions = [...(editingField.options || [])];
+                        newOptions.splice(index, 1);
+                        setEditingField(prev => prev ? { ...prev, options: newOptions } : null);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                ))}
+                <Button
+                  startIcon={<AddIcon />}
+                  onClick={() => {
+                    const newOptions = [...(editingField.options || []), ''];
+                    setEditingField(prev => prev ? { ...prev, options: newOptions } : null);
+                  }}
+                >
+                  選択肢を追加
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsDialogOpen(false)}>キャンセル</Button>
+          <Button onClick={handleSaveField} variant="contained" color="primary">
+            保存
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
-}; 
+};
+
+export default FormBuilder; 
