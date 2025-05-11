@@ -19,6 +19,9 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Install dependencies
+        run: cd backend && bundle install
+
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: cd backend && bin/brakeman --no-pager
 
