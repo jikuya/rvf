@@ -9,6 +9,12 @@ import {
   CircularProgress,
   Alert,
   Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from '@mui/material';
 import api from '../utils/axios';
 
@@ -97,57 +103,44 @@ const Jobs: React.FC = () => {
         </Button>
       </Box>
 
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              求人ID
-            </th>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              求人タイトル
-            </th>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              求人詳細
-            </th>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              ステータス
-            </th>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              編集
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {jobs.map((job) => (
-            <tr key={job.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {job.id}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {job.title}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {job.description}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <Chip
-                  label={getStatusLabel(job.status)}
-                  color={getStatusColor(job.status)}
-                  sx={{ mr: 1 }}
-                />
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                  onClick={() => navigate(`/jobs/${job.id}/edit`)}
-                >
-                  編集
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>求人ID</TableCell>
+              <TableCell>求人タイトル</TableCell>
+              <TableCell>求人詳細</TableCell>
+              <TableCell>ステータス</TableCell>
+              <TableCell>編集</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {jobs.map((job) => (
+              <TableRow key={job.id}>
+                <TableCell>{job.id}</TableCell>
+                <TableCell>{job.title}</TableCell>
+                <TableCell>{job.description}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={getStatusLabel(job.status)}
+                    color={getStatusColor(job.status)}
+                    sx={{ mr: 1 }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => navigate(`/jobs/${job.id}/edit`)}
+                  >
+                    編集
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Container>
   );
 };
