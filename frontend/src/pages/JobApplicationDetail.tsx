@@ -37,7 +37,7 @@ const JobApplicationDetail: React.FC = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const response = await api.get<JobApplication>(`/job-applications/${applicationId}`);
+        const response = await api.get<JobApplication>(`/job_applications/${applicationId}`);
         setApplication(response.data);
       } catch (err) {
         setError('応募情報の取得に失敗しました');
@@ -51,7 +51,7 @@ const JobApplicationDetail: React.FC = () => {
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      await api.patch(`/job-applications/${applicationId}`, { status: newStatus });
+      await api.patch(`/job_applications/${applicationId}`, { status: newStatus });
       setApplication((prev) => prev ? { ...prev, status: newStatus } : null);
     } catch (err) {
       setError('ステータスの更新に失敗しました');
@@ -80,7 +80,7 @@ const JobApplicationDetail: React.FC = () => {
         <Typography variant="h4" component="h1">
           応募詳細
         </Typography>
-        <Button variant="outlined" onClick={() => navigate('/job-applications')}>
+        <Button variant="outlined" onClick={() => navigate('/job_applications')}>
           一覧に戻る
         </Button>
       </Box>

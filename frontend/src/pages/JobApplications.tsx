@@ -40,7 +40,7 @@ const JobApplications: React.FC = () => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await api.get<JobApplication[]>('/job-applications');
+        const response = await api.get<JobApplication[]>('/job_applications');
         setApplications(response.data);
       } catch (err) {
         setError('応募情報の取得に失敗しました');
@@ -134,7 +134,7 @@ const JobApplications: React.FC = () => {
                   <Button
                     variant="contained"
                     size="small"
-                    onClick={() => navigate(`/job-applications/${application.id}`)}
+                    onClick={() => navigate(`/job_applications/${application.id}`)}
                   >
                     詳細
                   </Button>

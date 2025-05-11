@@ -27,6 +27,6 @@ Rails.application.routes.draw do
   end
 
   resources :jobs do
-    resources :job_applications, only: [ :index, :create, :show, :update ]
   end
+  resources :job_applications, only: [ :index, :create, :show, :update ]
 end

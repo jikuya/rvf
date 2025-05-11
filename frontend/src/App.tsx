@@ -29,8 +29,6 @@ const App: React.FC = () => {
               <Route path="jobs/new" element={<PrivateRoute><JobForm /></PrivateRoute>} />
               <Route path="jobs/:jobId/edit" element={<PrivateRoute><JobForm /></PrivateRoute>} />
               <Route path="jobs/:jobId/apply" element={<JobApplicationForm />} />
-              <Route path="job-applications" element={<PrivateRoute><JobApplications /></PrivateRoute>} />
-              <Route path="job-applications/:applicationId" element={<PrivateRoute><JobApplicationDetail /></PrivateRoute>} />
               <Route path="job_applications" element={<PrivateRoute><JobApplications /></PrivateRoute>} />
               <Route path="job_applications/:applicationId" element={<PrivateRoute><JobApplicationDetail /></PrivateRoute>} />
             </Route>
