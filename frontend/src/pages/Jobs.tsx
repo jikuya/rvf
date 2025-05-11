@@ -97,36 +97,57 @@ const Jobs: React.FC = () => {
         </Button>
       </Box>
 
-      {jobs.map((job) => (
-        <Paper key={job.id} sx={{ p: 3, mb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Box>
-              <Typography variant="h6" gutterBottom>
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr>
+            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              求人ID
+            </th>
+            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              求人タイトル
+            </th>
+            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              求人詳細
+            </th>
+            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              ステータス
+            </th>
+            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              編集
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {jobs.map((job) => (
+            <tr key={job.id}>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {job.id}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {job.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {job.location} | {job.employment_type} | {job.salary}
-              </Typography>
-              <Typography variant="body1" sx={{ mt: 2 }}>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {job.description}
-              </Typography>
-            </Box>
-            <Box>
-              <Chip
-                label={getStatusLabel(job.status)}
-                color={getStatusColor(job.status)}
-                sx={{ mr: 1 }}
-              />
-              <Button
-                variant="outlined"
-                onClick={() => navigate(`/jobs/${job.id}`)}
-              >
-                詳細
-              </Button>
-            </Box>
-          </Box>
-        </Paper>
-      ))}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <Chip
+                  label={getStatusLabel(job.status)}
+                  color={getStatusColor(job.status)}
+                  sx={{ mr: 1 }}
+                />
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                  onClick={() => navigate(`/jobs/${job.id}/edit`)}
+                >
+                  編集
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </Container>
   );
 };
