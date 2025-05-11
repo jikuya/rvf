@@ -27,7 +27,7 @@ module Api
 
       def me
         if current_admin
-          render json: current_admin
+          render json: { user: current_admin }
         else
           render json: { error: 'Not logged in' }, status: :unauthorized
         end
