@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 import { getApiBaseUrl } from './env';
 
 export const axiosInstance = axios.create({
@@ -33,4 +33,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// export default axiosInstance; 
+export default axiosInstance; 
