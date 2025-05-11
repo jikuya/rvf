@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (token) {
       setIsAuthenticated(true);
       // ユーザー情報を取得
-      api.get<User>('/me')
+      api.get<User>('/api/v1/me')
         .then(response => {
           setUser(response.data);
         })

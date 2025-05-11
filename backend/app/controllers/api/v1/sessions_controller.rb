@@ -24,6 +24,14 @@ module Api
         # セッションの破棄は不要（JWTを使用するため）
         render json: { message: 'Logged out successfully' }, status: :ok
       end
+
+      def me
+        if current_admin
+          render json: current_admin
+        else
+          render json: { error: 'Not logged in' }, status: :unauthorized
+        end
+      end
     end
   end
 end 

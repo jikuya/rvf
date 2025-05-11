@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       post '/login', to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
       post 'test/ping', to: 'test#ping'
+      get '/me', to: 'sessions#me'
 
       resources :companies, only: [:create]
       resources :jobs, only: [:index, :create] do
