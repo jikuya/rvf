@@ -40,7 +40,7 @@ const Header: React.FC = () => {
               <>
                 <Button
                   component={Link}
-                  to="/applications"
+                  to="/job_applications"
                   color="inherit"
                 >
                   応募一覧
