@@ -13,6 +13,8 @@ import JobApplicationDetail from './pages/JobApplicationDetail';
 import JobApplicationForm from './pages/JobApplicationForm';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import Companies from './pages/Companies';
+import CompanyDetail from './pages/CompanyDetail';
 
 const App: React.FC = () => {
   return (
@@ -31,6 +33,8 @@ const App: React.FC = () => {
               <Route path="jobs/:jobId/apply" element={<JobApplicationForm />} />
               <Route path="job_applications" element={<PrivateRoute><JobApplications /></PrivateRoute>} />
               <Route path="job_applications/:applicationId" element={<PrivateRoute><JobApplicationDetail /></PrivateRoute>} />
+              <Route path="companies" element={<PrivateRoute><Companies /></PrivateRoute>} />
+              <Route path="companies/:companyId" element={<PrivateRoute><CompanyDetail /></PrivateRoute>} />
             </Route>
           </Routes>
         </Router>

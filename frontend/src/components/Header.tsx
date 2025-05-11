@@ -46,6 +46,20 @@ const Header: React.FC = () => {
                   応募一覧
                 </Button>
                 <Button
+                  component={Link}
+                  to="/companies"
+                  color="inherit"
+                >
+                  企業一覧
+                </Button>
+                <Button
+                  component={Link}
+                  to="/jobs"
+                  color="inherit"
+                >
+                  求人一覧
+                </Button>
+                <Button
                   onClick={handleLogout}
                   color="inherit"
                   variant="outlined"
