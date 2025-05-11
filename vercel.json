@@ -1,16 +1,19 @@
 {
-  "version":2,
-  "builds":[
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
     {
-      "src":"frontend/package.json",
-      "use":"@vercel/static-build",
-      "config":{"distDir":"dist","buildCommand":"npm run build"}
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
     }
   ],
+  "builds": [
+    { "src": "frontend/package.json", "use": "@vercel/static-build", "config": { "distDir": "frontend/dist" } }
+  ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/(.*)", "dest": "frontend/dist/index.html" }
   ]
 }
