@@ -1,7 +1,7 @@
 class JobApplicationsController < ApplicationController
   def index
     @job_applications = JobApplication.includes(:job).all
-    render json: @job_applications.as_json(include: { job: { only: [:id, :title] } })
+    render json: @job_applications.as_json(include: { job: { only: [ :id, :title ] } })
   end
 
   def create
