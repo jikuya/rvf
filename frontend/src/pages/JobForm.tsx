@@ -91,7 +91,7 @@ const JobForm: React.FC = () => {
     // 会社一覧を取得
     const fetchCompanies = async () => {
       try {
-        const response = await api.get<Company[]>('/companies');
+        const response = await api.get<Company[]>('/api/v1/companies');
         setCompanies(response.data);
       } catch (err) {
         setError('会社一覧の取得に失敗しました');
@@ -105,7 +105,7 @@ const JobForm: React.FC = () => {
     if (jobId && jobId !== "new") {
       const fetchJob = async () => {
         try {
-          const response = await api.get<Job>(`/jobs/${jobId}`);
+          const response = await api.get<Job>(`/api/v1/jobs/${jobId}`);
           setJob(response.data);
         } catch (err) {
           setError('求人情報の取得に失敗しました');

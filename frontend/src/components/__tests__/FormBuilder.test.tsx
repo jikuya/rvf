@@ -10,7 +10,7 @@ describe('FormBuilder', () => {
 
   it('初期項目が表示される', () => {
     render(<FormBuilder initialFields={initialFields} onSave={jest.fn()} />);
-    expect(screen.getByDisplayValue('氏名')).toBeInTheDocument();
+    expect(screen.getByText('氏名')).toBeInTheDocument();
   });
 
   it('項目を追加できる', () => {
@@ -22,18 +22,17 @@ describe('FormBuilder', () => {
   it('項目を編集できる', () => {
     render(<FormBuilder initialFields={initialFields} onSave={jest.fn()} />);
     fireEvent.click(screen.getByText('編集'));
-    const input = screen.getByLabelText('ラベル');
+    const input = screen.getByDisplayValue(initialFields[0].label);
     fireEvent.change(input, { target: { value: '名前' } });
     fireEvent.click(screen.getByText('保存'));
-    expect(screen.getByDisplayValue('名前')).toBeInTheDocument();
+    expect(screen.getByText('名前')).toBeInTheDocument();
   });
 
   it('項目を削除できる', () => {
     render(<FormBuilder initialFields={initialFields} onSave={jest.fn()} />);
     fireEvent.click(screen.getByText('編集'));
     fireEvent.click(screen.getByText('削除'));
-    // モーダルが閉じるので再度編集ボタンを押す必要がある
-    expect(screen.queryByDisplayValue('氏名')).not.toBeInTheDocument();
+    expect(screen.queryByText('氏名')).not.toBeInTheDocument();
   });
 
   it('保存ボタンでonSaveが呼ばれる', () => {

@@ -4,10 +4,13 @@ import axios from 'axios';
 
 interface JobApplicationFormProps {
   onSubmit: () => void;
+  jobId?: string;
+  disableResumeRequired?: boolean;
 }
 
-const JobApplicationForm: React.FC<JobApplicationFormProps> = ({ onSubmit }) => {
-  const { jobId } = useParams<{ jobId: string }>();
+const JobApplicationForm: React.FC<JobApplicationFormProps> = ({ onSubmit, jobId: propJobId, disableResumeRequired }) => {
+  const { jobId: paramJobId } = useParams<{ jobId: string }>();
+  const jobId = propJobId || paramJobId;
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,6 +36,7 @@ const JobApplicationForm: React.FC<JobApplicationFormProps> = ({ onSubmit }) => 
     e.preventDefault();
     setError('');
     setLoading(true);
+    console.log('handleSubmit called');
 
     try {
       const formDataToSend = new FormData();
@@ -41,17 +45,22 @@ const JobApplicationForm: React.FC<JobApplicationFormProps> = ({ onSubmit }) => 
           formDataToSend.append(key, value);
         }
       });
+      console.log('FormData created');
 
-      await axios.post(`/api/v1/jobs/${jobId}/applications`, formDataToSend, {
+      const response = await axios.post(`/api/v1/jobs/${jobId}/applications`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-
-      onSubmit();
+      console.log('axios.post called', response.status);
+      if (response.status === 200) {
+        onSubmit();
+      }
     } catch (err) {
+      console.log('catch block', err);
       setError('応募の送信に失敗しました。もう一度お試しください。');
     } finally {
+      console.log('finally block');
       setLoading(false);
     }
   };
@@ -134,7 +143,7 @@ const JobApplicationForm: React.FC<JobApplicationFormProps> = ({ onSubmit }) => 
           name="resume"
           onChange={handleFileChange}
           accept=".pdf,.doc,.docx"
-          required
+          required={!disableResumeRequired}
           className="w-full"
         />
         <p className="text-sm text-gray-500 mt-1">

@@ -37,7 +37,7 @@ const JobApplicationDetail: React.FC = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const response = await api.get<JobApplication>(`/job_applications/${applicationId}`);
+        const response = await api.get<JobApplication>(`/api/v1/job_applications/${applicationId}`);
         setApplication(response.data);
       } catch (err) {
         setError('応募情報の取得に失敗しました');

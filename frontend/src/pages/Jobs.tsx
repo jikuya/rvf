@@ -32,7 +32,7 @@ const Jobs: React.FC = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await api.get<Job[]>('/jobs');
+        const response = await api.get<Job[]>('/api/v1/jobs');
         setJobs(response.data);
       } catch (err) {
         setError('求人情報の取得に失敗しました');

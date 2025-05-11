@@ -40,7 +40,7 @@ const Applications: React.FC = () => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await api.get<Application[]>('/applications');
+        const response = await api.get<Application[]>('/api/v1/applications');
         setApplications(response.data);
       } catch (err) {
         setError('応募情報の取得に失敗しました');

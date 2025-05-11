@@ -40,7 +40,7 @@ describe('JobEdit', () => {
     );
     expect(screen.getByText('読み込み中...')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText('テスト求人 のフォーム定義編集')).toBeInTheDocument());
-    expect(screen.getByDisplayValue('氏名')).toBeInTheDocument();
+    expect(screen.getByText('氏名')).toBeInTheDocument();
   });
 
   it('フォームを保存ボタンでAPIが呼ばれ、成功メッセージが出る', async () => {

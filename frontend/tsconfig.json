@@ -1,4 +1,10 @@
 {
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "types": ["jest", "@testing-library/jest-dom"],
+    "lib": ["ES2020", "DOM"]
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

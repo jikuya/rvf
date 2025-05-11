@@ -1,8 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter, Routes, Route } from 'react-router-dom';
 import JobApplicationForm from '../JobApplicationForm';
 import axios from 'axios';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -33,9 +34,11 @@ describe('JobApplicationForm', () => {
     mockedAxios.post.mockResolvedValueOnce({ data: {}, status: 200, statusText: 'OK', headers: {}, config: {} as any });
 
     render(
-      <BrowserRouter>
-        <JobApplicationForm onSubmit={mockOnSubmit} />
-      </BrowserRouter>
+      <MemoryRouter initialEntries={['/jobs/1']}>
+        <Routes>
+          <Route path="/jobs/:jobId" element={<JobApplicationForm onSubmit={mockOnSubmit} jobId="1" disableResumeRequired={true} />} />
+        </Routes>
+      </MemoryRouter>
     );
 
     fireEvent.change(screen.getByLabelText(/お名前/i), {
@@ -53,11 +56,13 @@ describe('JobApplicationForm', () => {
 
     const file = new File(['test'], 'test.pdf', { type: 'application/pdf' });
     const fileInput = screen.getByLabelText(/履歴書/i);
-    fireEvent.change(fileInput, { target: { files: [file] } });
+    await userEvent.upload(fileInput, file);
+    expect((fileInput as HTMLInputElement).files![0]).toBe(file);
 
-    fireEvent.click(screen.getByRole('button', { name: /応募する/i }));
+    await userEvent.click(screen.getByRole('button', { name: /応募する/i }));
 
     await waitFor(() => {
+      expect(mockedAxios.post).toHaveBeenCalled();
       expect(mockOnSubmit).toHaveBeenCalled();
     });
   });
@@ -66,9 +71,11 @@ describe('JobApplicationForm', () => {
     mockedAxios.post.mockRejectedValueOnce(new Error('Network error'));
 
     render(
-      <BrowserRouter>
-        <JobApplicationForm onSubmit={mockOnSubmit} />
-      </BrowserRouter>
+      <MemoryRouter initialEntries={['/jobs/1']}>
+        <Routes>
+          <Route path="/jobs/:jobId" element={<JobApplicationForm onSubmit={mockOnSubmit} jobId="1" disableResumeRequired={true} />} />
+        </Routes>
+      </MemoryRouter>
     );
 
     fireEvent.change(screen.getByLabelText(/お名前/i), {
@@ -80,12 +87,13 @@ describe('JobApplicationForm', () => {
 
     const file = new File(['test'], 'test.pdf', { type: 'application/pdf' });
     const fileInput = screen.getByLabelText(/履歴書/i);
-    fireEvent.change(fileInput, { target: { files: [file] } });
+    await userEvent.upload(fileInput, file);
+    expect((fileInput as HTMLInputElement).files![0]).toBe(file);
 
-    fireEvent.click(screen.getByRole('button', { name: /応募する/i }));
+    await userEvent.click(screen.getByRole('button', { name: /応募する/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/応募の送信に失敗しました/i)).toBeInTheDocument();
+      expect(screen.getByText(/応募の送信に失敗しました。もう一度お試しください。/i)).toBeInTheDocument();
     });
   });
 
@@ -96,7 +104,7 @@ describe('JobApplicationForm', () => {
       </BrowserRouter>
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /応募する/i }));
+    await userEvent.click(screen.getByRole('button', { name: /応募する/i }));
 
     await waitFor(() => {
       expect(screen.getByLabelText(/お名前/i)).toBeInvalid();

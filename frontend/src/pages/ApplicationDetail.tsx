@@ -43,7 +43,7 @@ const ApplicationDetail: React.FC = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const response = await api.get<Application>(`/applications/${applicationId}`);
+        const response = await api.get<Application>(`/api/v1/applications/${applicationId}`);
         setApplication(response.data);
         setStatus(response.data.status);
       } catch (err) {

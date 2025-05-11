@@ -37,7 +37,7 @@ const Companies: React.FC = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await api.get<Company[]>('/companies');
+        const response = await api.get<Company[]>('/api/v1/companies');
         setCompanies(response.data);
       } catch (err) {
         setError('企業情報の取得に失敗しました');
