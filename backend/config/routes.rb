@@ -4,8 +4,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      get "test/ping"
-      post "test/ping", to: "test#ping"
       post "/login", to: "sessions#create"
       delete "/logout", to: "sessions#destroy"
       get "/me", to: "sessions#me"
