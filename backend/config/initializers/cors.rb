@@ -7,12 +7,12 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins Rails.env.test? ? '*' : ENV.fetch('FRONTEND_URL', 'https://rvf.vercel.app')
+    origins ENV.fetch('FRONTEND_URL', 'https://rvf-3engb13sd-jikuyas-projects.vercel.app')
 
     resource '*',
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
       expose: ['Authorization'],
-      credentials: !Rails.env.test?
+      credentials: true
   end
 end
