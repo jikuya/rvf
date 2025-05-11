@@ -12,26 +12,29 @@ import Applications from './pages/Applications';
 import ApplicationDetail from './pages/ApplicationDetail';
 import JobApplicationForm from './pages/JobApplicationForm';
 import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider } from './contexts/AuthContext';
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/jobs" replace />} />
-            <Route path="jobs" element={<PrivateRoute><Jobs /></PrivateRoute>} />
-            <Route path="jobs/:jobId" element={<PrivateRoute><JobDetail /></PrivateRoute>} />
-            <Route path="jobs/new" element={<PrivateRoute><JobForm /></PrivateRoute>} />
-            <Route path="jobs/:jobId/edit" element={<PrivateRoute><JobForm /></PrivateRoute>} />
-            <Route path="jobs/:jobId/apply" element={<JobApplicationForm />} />
-            <Route path="applications" element={<PrivateRoute><Applications /></PrivateRoute>} />
-            <Route path="applications/:applicationId" element={<PrivateRoute><ApplicationDetail /></PrivateRoute>} />
-          </Route>
-        </Routes>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Navigate to="/jobs" replace />} />
+              <Route path="jobs" element={<PrivateRoute><Jobs /></PrivateRoute>} />
+              <Route path="jobs/:jobId" element={<PrivateRoute><JobDetail /></PrivateRoute>} />
+              <Route path="jobs/new" element={<PrivateRoute><JobForm /></PrivateRoute>} />
+              <Route path="jobs/:jobId/edit" element={<PrivateRoute><JobForm /></PrivateRoute>} />
+              <Route path="jobs/:jobId/apply" element={<JobApplicationForm />} />
+              <Route path="applications" element={<PrivateRoute><Applications /></PrivateRoute>} />
+              <Route path="applications/:applicationId" element={<PrivateRoute><ApplicationDetail /></PrivateRoute>} />
+            </Route>
+          </Routes>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 };
