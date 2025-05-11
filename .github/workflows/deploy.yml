@@ -1,40 +1,31 @@
-name: Deploy to Heroku
+name: Deploy backend to Heroku
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      # フル履歴取得
+      - uses: actions/checkout@v3
         with:
-          ruby-version: .ruby-version
-          bundler-cache: true
+          fetch-depth: 0
 
-      - name: Install dependencies
-        run: cd backend && bundle install
+      # サブツリーを切り出して一時ブランチ heroku-deploy を作成
+      - name: Split backend subtree
+        run: git subtree split --prefix backend -b heroku-deploy
 
-      - name: Deploy to Heroku
+      # Heroku リモートを追加＆強制プッシュ
+      - name: Push to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
-          git config --global user.email "${HEROKU_EMAIL}"
-          git config --global user.name "GitHub Actions"
           git remote add heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git
-          git fetch heroku main || true
-          git reset --hard
-          git subtree pull --prefix backend heroku main --squash || true
-          if ! git diff --quiet; then
-            git commit -am "chore: auto-commit after subtree pull to resolve deploy conflict [skip ci]"
-          fi
-          git subtree push --prefix backend heroku main 
+          git push heroku heroku-deploy:main --force
+
+      # 後片付け（オプション）
+      - name: Delete temp branch
+        run: git branch -D heroku-deploy || true
