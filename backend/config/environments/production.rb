@@ -98,4 +98,5 @@ Rails.application.configure do
   }
 
   config.hosts << "rvf-f1cc04378d39.herokuapp.com"
+  config.hosts << "rvf-backend-200c549c3917.herokuapp.com"
 end
