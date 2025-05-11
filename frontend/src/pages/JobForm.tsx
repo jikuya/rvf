@@ -16,6 +16,11 @@ import {
   Alert,
 } from '@mui/material';
 
+interface Company {
+  id: number;
+  name: string;
+}
+
 interface Job {
   id: number;
   title: string;
@@ -25,6 +30,7 @@ interface Job {
   salary: string;
   employment_type: string;
   status: string;
+  company_id?: number;
   form_definition: Array<{
     id: string;
     type: string;
@@ -76,12 +82,27 @@ const JobForm: React.FC = () => {
       }
     ]
   });
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (jobId) {
+    // 会社一覧を取得
+    const fetchCompanies = async () => {
+      try {
+        const response = await api.get<Company[]>('/companies');
+        setCompanies(response.data);
+      } catch (err) {
+        setError('会社一覧の取得に失敗しました');
+      }
+    };
+    fetchCompanies();
+  }, []);
+
+  useEffect(() => {
+    // jobIdが存在し、かつ"new"でない場合のみAPIリクエスト
+    if (jobId && jobId !== "new") {
       const fetchJob = async () => {
         try {
           const response = await api.get<Job>(`/jobs/${jobId}`);
@@ -100,10 +121,18 @@ const JobForm: React.FC = () => {
     setError(null);
 
     try {
+      const jobPayload = { ...job };
+      delete jobPayload.id;
+      if (!jobPayload.company_id) {
+        setError('会社を選択してください');
+        setLoading(false);
+        return;
+      }
+      console.log('送信jobPayload:', jobPayload);
       if (jobId) {
-        await api.patch(`/jobs/${jobId}`, job);
+        await api.patch(`/jobs/${jobId}`, { job: jobPayload });
       } else {
-        await api.post('/jobs', job);
+        await api.post('/jobs', { job: jobPayload });
       }
       navigate('/jobs');
     } catch (err) {
@@ -125,6 +154,10 @@ const JobForm: React.FC = () => {
     setJob((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleCompanyChange = (e: { target: { value: number } }) => {
+    setJob((prev) => ({ ...prev, company_id: e.target.value }));
+  };
+
   return (
     <Container>
       <Paper sx={{ p: 4, mt: 4 }}>
@@ -134,6 +167,22 @@ const JobForm: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <FormControl fullWidth required>
+              <InputLabel>会社を選択</InputLabel>
+              <Select
+                name="company_id"
+                value={job.company_id || ''}
+                onChange={handleCompanyChange}
+                label="会社を選択"
+              >
+                {companies.map((company) => (
+                  <MenuItem key={company.id} value={company.id}>
+                    {company.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <TextField
               label="求人タイトル"
               name="title"
