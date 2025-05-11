@@ -33,4 +33,7 @@ jobs:
           git remote add heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git
           git fetch heroku main || true
           git subtree pull --prefix backend heroku main --squash || true
+          if ! git diff --quiet; then
+            git commit -am "chore: auto-commit after subtree pull to resolve deploy conflict [skip ci]"
+          fi
           git subtree push --prefix backend heroku main 
